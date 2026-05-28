@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'daily_limit_reached' }, { status: 429 })
   }
 
-  // Check queue slots (active jobs)
+  // Check queue slots
   const { count } = await admin.from('jobs')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', user.id)
@@ -54,22 +54,27 @@ export async function POST(req: NextRequest) {
 
   if (jobError) return NextResponse.json({ error: 'Failed to create job' }, { status: 500 })
 
-  // Submit to Vast.ai / GPU worker
-  // For now, we queue it and the worker polls — in production, POST to RunPod/Vast endpoint
+  // Submit to GPU worker
   await submitToGPU(job.id, { type, ...input, watermark: limits.watermark })
 
   return NextResponse.json({ job_id: job.id })
 }
 
 async function submitToGPU(jobId: string, input: Record<string, unknown>) {
-  const vastApiKey = process.env.VAST_API_KEY
-  if (!vastApiKey || vastApiKey === 'placeholder') {
-    // GPU not connected yet — mark as pending for manual processing
-    console.log(`[GPU] Job ${jobId} queued (GPU not configured):`, input)
-    return
-  }
+  const workerUrl = process.env.GPU_WORKER_URL || 'http://171.101.230.15:8000'
 
-  // TODO: POST to your Vast.ai/RunPod worker endpoint
-  // const workerUrl = process.env.GPU_WORKER_URL
-  // await fetch(`${workerUrl}/run`, { method: 'POST', body: JSON.stringify({ job_id: jobId, ...input }) })
+  try {
+    const res = await fetch(`${workerUrl}/api/jobs/run`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ job_id: jobId, ...input }),
+    })
+    if (!res.ok) {
+      console.error(`[GPU] Worker responded ${res.status} for job ${jobId}`)
+    } else {
+      console.log(`[GPU] Job ${jobId} submitted successfully`)
+    }
+  } catch (e) {
+    console.error(`[GPU] Failed to submit job ${jobId}:`, e)
+  }
 }
