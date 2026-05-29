@@ -1,5 +1,5 @@
 export type Plan = 'free' | 'pro'
-export type JobType = 'tts' | 'clone' | 'dub'
+export type JobType = 'tts' | 'clone' | 'dub' | 'transcription'
 export type JobStatus = 'pending' | 'processing' | 'completed' | 'failed'
 
 export interface Profile {
@@ -27,4 +27,14 @@ export interface UsageLog {
   date: string
   minutes_used: number
   jobs_count: number
+}
+
+export interface VoiceProfile {
+  id: string
+  user_id: string
+  name: string
+  description: string
+  sample_url?: string
+  status: 'pending' | 'ready' | 'failed'
+  created_at: string
 }

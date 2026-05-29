@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  omnivoice:
+    image: ghcr.io/debpalash/omnivoice-studio:latest
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - PYTHONPATH=/app/backend
+      - HF_HOME=/app/omnivoice_data/huggingface
+      - OMNIVOICE_DATA_DIR=/app/omnivoice_data
+      - OMNIVOICE_BIND_HOST=0.0.0.0
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 3900
+    ports:
+      - "3900:3900"
+    volumes:
+      - omnivoice_data:/app/omnivoice_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3900/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 120s
+
+  whisper:
+    image: onerahmet/openai-whisper-asr-webservice:latest-gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - ASR_MODEL=base
+      - ASR_ENGINE=faster_whisper
+    ports:
+      - "9000:9000"
+    volumes:
+      - whisper_models:/root/.cache/huggingface
+
+volumes:
+  omnivoice_data:
+  whisper_models:

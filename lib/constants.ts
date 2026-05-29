@@ -5,6 +5,7 @@ export const PLAN_LIMITS = {
     maxCloneSampleSeconds: 30,
     queueSlots: 1,
     watermark: true,
+    maxVoiceProfiles: 3,
   },
   pro: {
     minutesPerDay: 120,
@@ -12,6 +13,7 @@ export const PLAN_LIMITS = {
     maxCloneSampleSeconds: 300,
     queueSlots: 10,
     watermark: false,
+    maxVoiceProfiles: 50,
   },
 }
 

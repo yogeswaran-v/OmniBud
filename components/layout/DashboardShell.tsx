@@ -18,7 +18,10 @@ interface Props {
 const TABS = [
   { label: 'Voice Clone', href: '/dashboard', icon: '🎙' },
   { label: 'Text to Speech', href: '/dashboard/tts', icon: '📝' },
+  { label: 'Transcription', href: '/dashboard/transcription', icon: '🔤' },
   { label: 'Video Dubbing', href: '/dashboard/dub', icon: '🎬' },
+  { label: 'Voice Profiles', href: '/dashboard/voices', icon: '👤' },
+  { label: 'History', href: '/dashboard/history', icon: '📋' },
 ]
 
 function UsageBar({ used, total, label }: { used: number; total: number; label: string }) {
