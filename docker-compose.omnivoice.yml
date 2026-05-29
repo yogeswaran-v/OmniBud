@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   omnivoice:
     image: ghcr.io/debpalash/omnivoice-studio:latest

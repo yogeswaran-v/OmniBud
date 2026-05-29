@@ -77,14 +77,14 @@ export default function HistoryList() {
                     </span>
                     <span style={{ fontSize: 11, color: '#333', marginLeft: 'auto' }}>{fmt(job.created_at)}</span>
                   </div>
-                  {job.type === 'tts' && job.input.text && (
+                  {job.type === 'tts' && typeof job.input.text === 'string' && (
                     <div style={{ fontSize: 12, color: '#555', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      &quot;{String(job.input.text).slice(0, 120)}&quot;
+                      &quot;{job.input.text.slice(0, 120)}&quot;
                     </div>
                   )}
-                  {job.type === 'transcription' && job.input.transcript && (
+                  {job.type === 'transcription' && typeof job.input.transcript === 'string' && (
                     <div style={{ fontSize: 12, color: '#555', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      &quot;{String(job.input.transcript).slice(0, 120)}&quot;
+                      &quot;{job.input.transcript.slice(0, 120)}&quot;
                     </div>
                   )}
                   {job.status === 'failed' && job.error && (
@@ -101,10 +101,10 @@ export default function HistoryList() {
                   </a>
                 </div>
               )}
-              {job.type === 'transcription' && job.input.transcript && (
+              {job.type === 'transcription' && typeof job.input.transcript === 'string' && (
                 <div style={{ paddingLeft: 30, marginTop: 8 }}>
                   <div style={{ padding: '10px 12px', background: '#141414', borderRadius: 8, fontSize: 12, color: '#888', lineHeight: 1.6, maxHeight: 80, overflow: 'hidden' }}>
-                    {String(job.input.transcript)}
+                    {job.input.transcript}
                   </div>
                 </div>
               )}
