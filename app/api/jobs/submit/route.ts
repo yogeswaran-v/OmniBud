@@ -33,6 +33,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'daily_limit_reached' }, { status: 429 })
   }
 
+  // Auto-reset jobs stuck for more than 10 minutes
+  const cutoff = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+  await admin.from('jobs')
+    .update({ status: 'failed', error: 'Timed out — worker did not respond' })
+    .eq('user_id', user.id)
+    .in('status', ['pending', 'processing'])
+    .lt('created_at', cutoff)
+
   const { count } = await admin.from('jobs')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', user.id)
