@@ -1,0 +1,12 @@
+FROM ghcr.io/debpalash/omnivoice-studio:latest
+
+# Install RunPod serverless SDK
+RUN pip install --no-cache-dir runpod requests
+
+# Copy handler
+COPY worker/handler.py /app/handler.py
+
+WORKDIR /app
+
+# Override entrypoint — run our handler (which starts OmniVoice internally)
+ENTRYPOINT ["python", "/app/handler.py"]
