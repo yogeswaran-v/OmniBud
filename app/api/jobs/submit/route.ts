@@ -60,8 +60,8 @@ export async function POST(req: NextRequest) {
 
   if (jobError) return NextResponse.json({ error: 'Failed to create job' }, { status: 500 })
 
-  // Submit to RunPod async — returns immediately, polling handles completion
-  submitToRunPod(job.id, { type, ...input }).catch(console.error)
+  // Submit to RunPod and wait for the job ID to be stored before returning
+  await submitToRunPod(job.id, { type, ...input })
 
   return NextResponse.json({ job_id: job.id })
 }
