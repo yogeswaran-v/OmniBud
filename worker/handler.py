@@ -48,6 +48,11 @@ def handler(job):
         start_server()
 
     inp = job.get("input", {})
+    job_type = inp.get("type", "tts")
+
+    if job_type != "tts":
+        return {"error": f"Job type '{job_type}' is not yet supported by this worker"}
+
     text = inp.get("text", "").strip()
     language = inp.get("language", "English")
 

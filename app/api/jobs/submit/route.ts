@@ -17,6 +17,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid job type' }, { status: 400 })
   }
 
+  if (type === 'clone' || type === 'dub') {
+    return NextResponse.json({ error: 'Coming soon — dubbing and voice cloning are not yet available' }, { status: 400 })
+  }
+
   const { data: profile } = await admin.from('profiles').select('plan').eq('id', user.id).single()
   const plan = profile?.plan || 'free'
   const limits = PLAN_LIMITS[plan as 'free' | 'pro']
