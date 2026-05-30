@@ -13,6 +13,10 @@ services:
       - HF_HOME=/app/omnivoice_data/huggingface
       - OMNIVOICE_DATA_DIR=/app/omnivoice_data
       - OMNIVOICE_BIND_HOST=0.0.0.0
+      # Keep the model resident — its reload-after-idle path is broken (_gpu_pool
+      # not defined), so once unloaded only a container restart recovers it.
+      # Effectively disable idle-unload (≈1 year) to prevent recurring 502s.
+      - OMNIVOICE_IDLE_TIMEOUT=31536000
     ports:
       - "3900:3900"
     volumes:
