@@ -7,6 +7,7 @@ import { PLAN_LIMITS } from '@/lib/constants'
 import type { Profile, Job } from '@/types'
 import UpgradeModal, { UpgradeTrigger } from '@/components/ui/UpgradeModal'
 import ToastProvider from '@/components/ui/Toast'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 interface Props {
   user: { email: string; id: string }
@@ -129,6 +130,9 @@ export default function DashboardShell({ user, profile, usage, recentJobs, child
         )}
 
         <div style={{ flex: 1 }} />
+        <div style={{ marginBottom: 12 }}>
+          <ThemeToggle />
+        </div>
         <div style={{ paddingTop: 14, borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ fontSize: 11, color: 'var(--text-2)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</div>
           <button onClick={handleSignOut} style={{ fontSize: 11, color: 'var(--text-4)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>out</button>
@@ -138,9 +142,9 @@ export default function DashboardShell({ user, profile, usage, recentJobs, child
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
+    <div className="bg-app" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {pctUsed >= 80 && (
-        <div style={{ background: pctUsed >= 95 ? 'rgba(224,85,85,0.08)' : 'rgba(240,160,48,0.07)', borderBottom: `1px solid ${pctUsed >= 95 ? 'rgba(224,85,85,0.2)' : 'rgba(240,160,48,0.2)'}`, padding: '8px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, fontSize: 12, color: pctUsed >= 95 ? 'var(--danger)' : 'var(--warning)', animation: 'slideDown 0.2s ease' }}>
+        <div style={{ background: pctUsed >= 95 ? 'var(--danger-dim)' : 'var(--warning-dim)', borderBottom: `1px solid ${pctUsed >= 95 ? 'var(--danger)' : 'var(--warning)'}`, padding: '8px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, fontSize: 12, color: pctUsed >= 95 ? 'var(--danger)' : 'var(--warning)', animation: 'slideDown 0.2s ease' }}>
           {pctUsed >= 95 ? `only ${remaining.toFixed(1)} min left today` : `running low — ${remaining.toFixed(1)} min remaining`}
           {plan === 'free' && (
             <button onClick={() => setUpgradeTrigger('daily_limit')} style={{ background: 'none', border: 'none', fontSize: 12, fontWeight: 600, color: 'inherit', cursor: 'pointer', textDecoration: 'underline' }}>
@@ -151,7 +155,7 @@ export default function DashboardShell({ user, profile, usage, recentJobs, child
       )}
 
       <div style={{ display: 'flex', flex: 1 }}>
-        <aside className="hide-mobile" style={{ width: 220, background: 'rgba(255,255,255,0.015)', boxShadow: 'inset -1px 0 0 var(--border)', flexShrink: 0, padding: '20px 14px', display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}>
+        <aside className="hide-mobile" style={{ width: 224, background: 'var(--bg-2)', boxShadow: 'inset -1px 0 0 var(--border)', flexShrink: 0, padding: '20px 14px', display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}>
           <SidebarContent />
         </aside>
         <main style={{ flex: 1, overflowY: 'auto', padding: '32px 40px', animation: 'fadeIn 0.25s ease', paddingBottom: 80 }}>
@@ -159,7 +163,7 @@ export default function DashboardShell({ user, profile, usage, recentJobs, child
         </main>
       </div>
 
-      <nav className="show-mobile" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'rgba(8,8,8,0.96)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderTop: '1px solid var(--border)', padding: '8px 0 12px', zIndex: 50 }}>
+      <nav className="show-mobile" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'var(--bg-2)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderTop: '1px solid var(--border)', padding: '8px 0 12px', zIndex: 50 }}>
         <div style={{ display: 'flex', justifyContent: 'space-around' }}>
           {[
             { label: 'tts', icon: '📝', href: '/dashboard/tts' },
