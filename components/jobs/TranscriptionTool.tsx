@@ -68,13 +68,13 @@ export default function TranscriptionTool() {
       </div>
 
       {error && (
-        <div style={{ padding: '12px 16px', background: '#1a0808', border: '1px solid #3a1010', borderRadius: 10, fontSize: 13, color: '#e05555', marginBottom: 20 }}>
+        <div style={{ padding: '12px 16px', background: 'var(--danger-dim)', border: '1px solid var(--danger)', borderRadius: 10, fontSize: 13, color: '#e05555', marginBottom: 20 }}>
           {error}
         </div>
       )}
 
       <div style={{ marginBottom: 20 }}>
-        <label style={{ fontSize: 11, color: '#555', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Audio / Video File</label>
+        <label style={{ fontSize: 11, color: 'var(--text-3)', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>audio / video file</label>
         <div
           onClick={() => fileRef.current?.click()}
           onDragOver={e => { e.preventDefault(); setDragging(true) }}
@@ -91,28 +91,28 @@ export default function TranscriptionTool() {
             onChange={e => e.target.files?.[0] && handleFileSelect(e.target.files[0])} />
           {audioFile ? (
             <div>
-              <div style={{ color: '#f97316', fontSize: 18, marginBottom: 4 }}>{uploading ? '⏳' : '✓'}</div>
-              <div style={{ fontSize: 13, color: '#f97316' }}>{audioFile.name}</div>
-              <div style={{ fontSize: 11, color: '#444', marginTop: 3 }}>
-                {uploading ? 'Uploading...' : `${(audioFile.size / 1024 / 1024).toFixed(1)} MB · Click to replace`}
+              <div style={{ color: 'var(--accent-strong)', fontSize: 18, marginBottom: 4 }}>{uploading ? '⏳' : '✓'}</div>
+              <div style={{ fontSize: 13, color: 'var(--accent-strong)', fontWeight: 600 }}>{audioFile.name}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 3 }}>
+                {uploading ? 'uploading…' : `${(audioFile.size / 1024 / 1024).toFixed(1)} MB · click to replace`}
               </div>
             </div>
           ) : (
             <div>
-              <div style={{ fontSize: 28, marginBottom: 8, opacity: 0.3 }}>🎙</div>
-              <div style={{ fontSize: 13, color: '#555' }}>Drop audio or video file here</div>
-              <div style={{ fontSize: 11, color: '#333', marginTop: 4 }}>WAV · MP3 · M4A · MP4 · 50MB max</div>
+              <div style={{ fontSize: 28, marginBottom: 8, opacity: 0.4 }}>🎙</div>
+              <div style={{ fontSize: 13, color: 'var(--text-2)' }}>drop audio or video file here</div>
+              <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>WAV · MP3 · M4A · MP4 · 50MB max</div>
             </div>
           )}
         </div>
       </div>
 
       <div style={{ marginBottom: 24 }}>
-        <label style={{ fontSize: 11, color: '#555', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Language</label>
+        <label style={{ fontSize: 11, color: 'var(--text-3)', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>language</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {SUPPORTED_LANGUAGES.map(lang => (
             <button key={lang} onClick={() => setLanguage(lang)}
-              style={{ padding: '5px 12px', borderRadius: 20, fontSize: 12, border: 'none', cursor: 'pointer', background: language === lang ? '#f97316' : '#1a1a1a', color: language === lang ? '#07070c' : '#666', transition: 'all 0.15s' }}>
+              style={{ padding: '6px 13px', borderRadius: 'var(--radius-pill)', fontSize: 12, cursor: 'pointer', border: '1px solid var(--border)', background: language === lang ? 'var(--accent)' : 'var(--bg-3)', color: language === lang ? 'var(--accent-text)' : 'var(--text-2)', transition: 'var(--transition)' }}>
               {lang}
             </button>
           ))}
@@ -130,8 +130,8 @@ export default function TranscriptionTool() {
       )}
 
       {job?.status === 'failed' && (
-        <div style={{ marginTop: 16, padding: '14px', background: '#1a0808', border: '1px solid #3a1010', borderRadius: 10, fontSize: 13, color: '#e05555' }}>
-          Transcription failed: {job.error}. Make sure WHISPER_LOCAL_URL is configured.
+        <div style={{ marginTop: 16, padding: '14px', background: 'var(--danger-dim)', border: '1px solid var(--danger)', borderRadius: 'var(--radius-sm)', fontSize: 13, color: 'var(--danger)' }}>
+          transcription failed: {job.error}. make sure WHISPER_LOCAL_URL is configured.
         </div>
       )}
     </div>
@@ -160,20 +160,20 @@ function TranscriptResult({ jobId }: { jobId: string }) {
   }
 
   if (!transcript) return (
-    <div style={{ marginTop: 16, padding: '14px', background: '#0f1a08', border: '1px solid #2a3a1a', borderRadius: 12, fontSize: 13, color: '#f97316' }}>
-      ✓ Transcription complete
+    <div className="card-accent" style={{ marginTop: 16, padding: '14px', fontSize: 13, color: 'var(--accent-strong)', fontWeight: 600 }}>
+      ✓ transcription complete
     </div>
   )
 
   return (
-    <div style={{ marginTop: 16, padding: '20px', background: '#0f1a08', border: '1px solid #2a3a1a', borderRadius: 12, animation: 'fadeIn 0.3s ease' }}>
+    <div className="card-accent" style={{ marginTop: 16, padding: '20px', animation: 'springIn 0.4s var(--ease-spring) both' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div style={{ fontSize: 12, color: '#f97316' }}>✓ Transcript</div>
-        <button onClick={copy} style={{ padding: '5px 12px', background: '#1e1e1e', border: '1px solid #2a2a2a', borderRadius: 6, fontSize: 11, color: '#888', cursor: 'pointer' }}>
-          {copied ? '✓ Copied' : 'Copy'}
+        <div style={{ fontSize: 12, color: 'var(--accent-strong)', fontWeight: 600 }}>✓ transcript</div>
+        <button onClick={copy} className="btn-ghost" style={{ fontSize: 11, padding: '6px 12px' }}>
+          {copied ? '✓ copied' : 'copy'}
         </button>
       </div>
-      <div style={{ fontSize: 13, color: '#ccc', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>{transcript}</div>
+      <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>{transcript}</div>
     </div>
   )
 }

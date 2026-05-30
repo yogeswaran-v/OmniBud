@@ -1,8 +1,10 @@
-import { test, describe } from 'node:test'
+import { test, describe, before } from 'node:test'
 import assert from 'node:assert/strict'
-import { api, pollJob } from '../helpers.ts'
+import { api, pollJob, resetTestUser } from '../helpers.ts'
 
 describe('share', () => {
+  before(async () => { await resetTestUser() })
+
   test('unshared job returns 404 on public share endpoint', async () => {
     const sub = await api('/api/jobs/submit', {
       method: 'POST',

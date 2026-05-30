@@ -49,15 +49,15 @@ export function ProgressBar({ progress, status }: { progress: number; status: st
 
 export function OutputPlayer({ outputUrl, fileName }: { outputUrl: string; fileName: string }) {
   return (
-    <div style={{ marginTop: 16, padding: '20px', background: '#0f1a08', border: '1px solid #2a3a1a', borderRadius: 12, animation: 'fadeIn 0.3s ease' }}>
-      <div style={{ fontSize: 12, color: '#f97316', marginBottom: 12 }}>✓ {fileName}</div>
+    <div className="card-accent" style={{ marginTop: 16, padding: '20px', animation: 'springIn 0.4s var(--ease-spring) both' }}>
+      <div style={{ fontSize: 12, color: 'var(--accent-strong)', marginBottom: 12, fontWeight: 600 }}>✓ {fileName}</div>
       {outputUrl.includes('.mp4') || outputUrl.includes('.webm') ? (
         <video controls src={outputUrl} style={{ width: '100%', borderRadius: 8, background: '#000', maxHeight: 300 }} />
       ) : (
         <audio controls src={outputUrl} style={{ width: '100%' }} />
       )}
-      <a href={outputUrl} download={fileName} style={{ display: 'inline-block', marginTop: 12, padding: '8px 16px', background: '#1e1e1e', borderRadius: 7, fontSize: 12, color: '#888' }}>
-        ↓ Download
+      <a href={outputUrl} download={fileName} className="btn-ghost" style={{ marginTop: 12, fontSize: 12 }}>
+        ↓ download
       </a>
     </div>
   )
@@ -69,27 +69,27 @@ export function LanguageSelector({ value, onChange, plan }: { value: string; onC
 
   return (
     <div>
-      <label style={{ fontSize: 11, color: '#555', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Target Language</label>
+      <label style={{ fontSize: 11, color: 'var(--text-3)', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>target language</label>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
         {ALL_LANGUAGES.map((lang: string) => {
           const locked = plan === 'free' && !FREE_LANGUAGES.includes(lang)
           return (
             <button key={lang}
               onClick={() => locked ? setShowUpgrade(true) : onChange(lang)}
-              style={{ padding: '5px 12px', borderRadius: 20, fontSize: 12, border: 'none', cursor: 'pointer', background: value === lang ? '#f97316' : locked ? '#0f0f0f' : '#1a1a1a', color: value === lang ? '#07070c' : locked ? '#333' : '#666', transition: 'all 0.15s' }}>
+              style={{ padding: '6px 13px', borderRadius: 'var(--radius-pill)', fontSize: 12, cursor: 'pointer', background: value === lang ? 'var(--accent)' : 'var(--bg-3)', color: value === lang ? 'var(--accent-text)' : locked ? 'var(--text-4)' : 'var(--text-2)', border: '1px solid var(--border)', transition: 'var(--transition)' }}>
               {lang}{locked ? ' 🔒' : ''}
             </button>
           )
         })}
         {plan === 'free' && (
-          <button onClick={() => setShowUpgrade(true)} style={{ padding: '5px 12px', borderRadius: 20, fontSize: 12, border: '1px dashed #222', background: 'none', color: '#f97316', cursor: 'pointer' }}>
+          <button onClick={() => setShowUpgrade(true)} style={{ padding: '6px 13px', borderRadius: 'var(--radius-pill)', fontSize: 12, border: '1px dashed var(--border-2)', background: 'none', color: 'var(--accent-strong)', cursor: 'pointer' }}>
             +626 more →
           </button>
         )}
       </div>
       {showUpgrade && (
-        <div style={{ marginTop: 10, padding: '10px 14px', background: '#120e04', border: '1px solid #2a2010', borderRadius: 8, fontSize: 12, color: '#d4a84b' }}>
-          All 646 languages available on Pro. <button onClick={() => { window.dispatchEvent(new CustomEvent('show-upgrade')) }} style={{ background: 'none', border: 'none', color: '#f97316', fontSize: 12, cursor: 'pointer', textDecoration: 'underline' }}>Upgrade →</button>
+        <div style={{ marginTop: 10, padding: '10px 14px', background: 'var(--accent-dim)', border: '1px solid var(--border-2)', borderRadius: 'var(--radius-sm)', fontSize: 12, color: 'var(--accent-strong)' }}>
+          all 646 languages available on Pro. <button onClick={() => { window.dispatchEvent(new CustomEvent('show-upgrade')) }} style={{ background: 'none', border: 'none', color: 'var(--accent-strong)', fontSize: 12, cursor: 'pointer', textDecoration: 'underline', fontWeight: 600 }}>upgrade →</button>
         </div>
       )}
     </div>

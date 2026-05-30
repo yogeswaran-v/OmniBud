@@ -1,25 +1,22 @@
-import { test, describe } from 'node:test'
+import { test, describe, before } from 'node:test'
 import assert from 'node:assert/strict'
-import { api, pollJob } from '../helpers.ts'
+import { api, pollJob, resetTestUser } from '../helpers.ts'
 
 describe('tts', () => {
-  test('submit returns job_id', async () => {
-    const r = await api('/api/jobs/submit', {
-      method: 'POST',
-      body: JSON.stringify({ type: 'tts', text: 'Hello from automated test.', voiceId: '1', language: 'English' }),
-    })
-    assert.equal(r.status, 200)
-    const d = await r.json()
-    assert.ok(d.job_id, 'should return job_id')
-  })
+  // Free plan allows 1 concurrent job + 5 min/day. Reset so the suite is deterministic.
+  before(async () => { await resetTestUser() })
 
-  test('job completes with mp3 URL', async () => {
+  test('submit returns job_id and completes with mp3 URL', async () => {
     const r = await api('/api/jobs/submit', {
       method: 'POST',
       body: JSON.stringify({ type: 'tts', text: 'End to end voice generation test.', voiceId: '1', language: 'English' }),
     })
-    const { job_id } = await r.json()
-    const result = await pollJob(job_id)
+    assert.equal(r.status, 200)
+    const d = await r.json()
+    assert.ok(d.job_id, 'should return job_id')
+
+    // Poll to completion — this also drains the single free-plan queue slot.
+    const result = await pollJob(d.job_id)
     assert.equal(result.status, 'completed', `job failed: ${result.error}`)
     assert.ok(result.output_url?.includes('.mp3'), 'output_url should be an mp3')
   })

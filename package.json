@@ -8,9 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "node --test --experimental-strip-types tests/api/auth.test.ts tests/api/voices.test.ts tests/api/history.test.ts tests/api/share.test.ts tests/api/tts.test.ts",
+    "test": "node --test --test-concurrency=1 --experimental-strip-types tests/api/auth.test.ts tests/api/voices.test.ts tests/api/history.test.ts tests/api/share.test.ts tests/api/tts.test.ts",
     "test:auth": "node --test --experimental-strip-types tests/api/auth.test.ts",
-    "test:fast": "node --test --experimental-strip-types tests/api/auth.test.ts tests/api/voices.test.ts tests/api/history.test.ts"
+    "test:fast": "node --test --test-concurrency=1 --experimental-strip-types tests/api/auth.test.ts tests/api/voices.test.ts tests/api/history.test.ts"
   },
   "dependencies": {
     "@stripe/stripe-js": "^4.1.0",

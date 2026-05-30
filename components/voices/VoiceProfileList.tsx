@@ -79,7 +79,7 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
     setProfiles(prev => prev.filter(p => p.id !== id))
   }
 
-  if (loading) return <div style={{ color: '#444', fontSize: 13, padding: 20 }}>Loading voice profiles...</div>
+  if (loading) return <div style={{ color: 'var(--text-3)', fontSize: 13, padding: 20 }}>Loading voice profiles...</div>
 
   return (
     <div style={{ maxWidth: 720 }}>
@@ -97,12 +97,12 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
       </div>
 
       {error && (
-        <div style={{ padding: '12px 16px', background: '#1a0808', border: '1px solid #3a1010', borderRadius: 10, fontSize: 13, color: '#e05555', marginBottom: 16 }}>{error}</div>
+        <div style={{ padding: '12px 16px', background: 'var(--danger-dim)', border: '1px solid var(--danger)', borderRadius: 10, fontSize: 13, color: '#e05555', marginBottom: 16 }}>{error}</div>
       )}
 
       {showForm && (
-        <div style={{ padding: 20, background: '#0f0f0f', border: '1px solid #1e1e1e', borderRadius: 12, marginBottom: 20 }}>
-          <div style={{ fontSize: 12, color: '#888', marginBottom: 16 }}>New voice profile</div>
+        <div className="card" style={{ padding: 20, marginBottom: 20 }}>
+          <div style={{ fontSize: 12, color: 'var(--text-2)', marginBottom: 16 }}>New voice profile</div>
           <input
             value={name} onChange={e => setName(e.target.value)}
             placeholder="Profile name (e.g. My Voice, Client Voice)"
@@ -115,14 +115,14 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
             style={{ width: '100%', padding: '10px 12px', fontSize: 13, marginBottom: 10 }}
           />
           <div style={{ marginBottom: 14 }}>
-            <label style={{ fontSize: 11, color: '#555', display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Voice Sample (optional)</label>
+            <label style={{ fontSize: 11, color: 'var(--text-3)', display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Voice Sample (optional)</label>
             <div onClick={() => document.getElementById('vp-sample-upload')?.click()}
-              style={{ border: '1.5px dashed #1e1e1e', borderRadius: 8, padding: '16px', textAlign: 'center', cursor: 'pointer', background: '#0c0c0c' }}>
+              style={{ border: '1.5px dashed var(--border-2)', borderRadius: 8, padding: '16px', textAlign: 'center', cursor: 'pointer', background: 'var(--bg-3)' }}>
               <input id="vp-sample-upload" type="file" accept="audio/*" style={{ display: 'none' }}
                 onChange={e => setSampleFile(e.target.files?.[0] ?? null)} />
               {sampleFile
                 ? <span style={{ fontSize: 12, color: '#f97316' }}>✓ {sampleFile.name}</span>
-                : <span style={{ fontSize: 12, color: '#444' }}>Click to upload audio sample (WAV · MP3 · M4A)</span>
+                : <span style={{ fontSize: 12, color: 'var(--text-3)' }}>Click to upload audio sample (WAV · MP3 · M4A)</span>
               }
             </div>
           </div>
@@ -136,8 +136,8 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
       {profiles.length === 0 ? (
         <div style={{ padding: 40, border: '1px dashed #1a1a1a', borderRadius: 12, textAlign: 'center' }}>
           <div style={{ fontSize: 28, marginBottom: 10, opacity: 0.3 }}>🎙</div>
-          <div style={{ fontSize: 13, color: '#444' }}>No voice profiles yet</div>
-          <div style={{ fontSize: 12, color: '#2a2a2a', marginTop: 4 }}>Create a profile to save voice samples for cloning</div>
+          <div style={{ fontSize: 13, color: 'var(--text-3)' }}>No voice profiles yet</div>
+          <div style={{ fontSize: 12, color: 'var(--text-4)', marginTop: 4 }}>Create a profile to save voice samples for cloning</div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -152,8 +152,8 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
                 {initials(p.name)}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 500, color: '#e8e8e8', marginBottom: 2 }}>{p.name}</div>
-                {p.description && <div style={{ fontSize: 11, color: '#555', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.description}</div>}
+                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', marginBottom: 2 }}>{p.name}</div>
+                {p.description && <div style={{ fontSize: 11, color: 'var(--text-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.description}</div>}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 20, background: p.status === 'ready' ? '#0d1a08' : '#1a1008', color: p.status === 'ready' ? '#f97316' : '#a07020', border: `1px solid ${p.status === 'ready' ? '#2a3a1a' : '#3a2a10'}` }}>
@@ -164,7 +164,7 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
                 )}
                 <button
                   onClick={e => { e.stopPropagation(); handleDelete(p.id) }}
-                  style={{ padding: '4px 8px', background: 'none', border: '1px solid #1e1e1e', borderRadius: 6, color: '#555', fontSize: 11, cursor: 'pointer' }}>
+                  style={{ padding: '4px 8px', background: 'none', border: '1px solid #1e1e1e', borderRadius: 6, color: 'var(--text-3)', fontSize: 11, cursor: 'pointer' }}>
                   Delete
                 </button>
               </div>
