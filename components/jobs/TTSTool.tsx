@@ -91,7 +91,13 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
   }
 
   const handleRegenerate = () => { setJobId(null); handleSubmit() }
-  const handleShare = () => { if (job?.id) { navigator.clipboard.writeText(`${window.location.origin}/share/${job.id}`).catch(() => {}); } }
+  const handleShare = async () => {
+    if (!job?.id) return
+    try {
+      await fetch(`/api/jobs/${job.id}/share`, { method: 'POST' })
+      await navigator.clipboard.writeText(`${window.location.origin}/share/${job.id}`)
+    } catch { /* silent — share link still works if clipboard fails */ }
+  }
 
   const usageColor = pctUsed >= 95 ? 'var(--danger)' : pctUsed >= 80 ? 'var(--warning)' : 'var(--accent)'
 

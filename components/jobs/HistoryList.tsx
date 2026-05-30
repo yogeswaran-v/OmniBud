@@ -51,9 +51,9 @@ export default function HistoryList() {
   }
 
   const shareJob = async (id: string) => {
-    const url = `${window.location.origin}/share/${id}`
     try {
-      await navigator.clipboard.writeText(url)
+      await fetch(`/api/jobs/${id}/share`, { method: 'POST' })
+      await navigator.clipboard.writeText(`${window.location.origin}/share/${id}`)
       toast('share link copied', 'success')
     } catch {
       toast('copy failed', 'error')

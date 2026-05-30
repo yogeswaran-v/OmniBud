@@ -118,6 +118,26 @@ async function submitToLocalOmniVoice(jobId: string, input: Record<string, unkno
   }
 }
 
+function validateAudioUrl(raw: string): void {
+  let parsed: URL
+  try { parsed = new URL(raw) } catch { throw new Error('Invalid audio URL') }
+  if (parsed.protocol !== 'https:') throw new Error('audio_url must use https://')
+  const host = parsed.hostname.toLowerCase()
+  // Block loopback, link-local (AWS IMDS), and RFC-1918 private ranges
+  if (
+    host === 'localhost' ||
+    /^127\./.test(host) ||
+    /^169\.254\./.test(host) ||
+    /^10\./.test(host) ||
+    /^192\.168\./.test(host) ||
+    /^172\.(1[6-9]|2[0-9]|3[01])\./.test(host) ||
+    /^::1$/.test(host) ||
+    host === '[::1]'
+  ) {
+    throw new Error('audio_url points to a private or reserved address')
+  }
+}
+
 async function submitTranscription(jobId: string, input: Record<string, unknown>) {
   const whisperUrl = process.env.WHISPER_LOCAL_URL
   const admin = createAdminSupabase()
@@ -128,6 +148,13 @@ async function submitTranscription(jobId: string, input: Record<string, unknown>
     const audioUrl = String(input.audio_url ?? '')
     if (!audioUrl) {
       await admin.from('jobs').update({ status: 'failed', error: 'No audio_url provided' }).eq('id', jobId)
+      return
+    }
+
+    try {
+      validateAudioUrl(audioUrl)
+    } catch (e) {
+      await admin.from('jobs').update({ status: 'failed', error: String(e instanceof Error ? e.message : e) }).eq('id', jobId)
       return
     }
 
