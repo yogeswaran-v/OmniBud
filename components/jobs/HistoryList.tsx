@@ -1,5 +1,8 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import WaveformPlayer from '@/components/ui/WaveformPlayer'
+import { toast } from '@/components/ui/Toast'
+import Link from 'next/link'
 
 interface HistoryJob {
   id: string
@@ -17,6 +20,7 @@ export default function HistoryList() {
   const [jobs, setJobs] = useState<HistoryJob[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'tts' | 'transcription'>('all')
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -34,82 +38,241 @@ export default function HistoryList() {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
   }
 
+  const toggleExpand = (id: string) => {
+    setExpanded(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  const copyTranscript = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => toast('transcript copied', 'success')).catch(() => toast('copy failed', 'error'))
+  }
+
+  const shareJob = async (id: string) => {
+    const url = `${window.location.origin}/share/${id}`
+    try {
+      await navigator.clipboard.writeText(url)
+      toast('share link copied', 'success')
+    } catch {
+      toast('copy failed', 'error')
+    }
+  }
+
+  // Stats: minutes generated this week
+  const now = Date.now()
+  const weekMs = 7 * 86400000
+  const weekJobs = jobs.filter(j => j.status === 'completed' && j.type === 'tts' && (now - new Date(j.created_at).getTime()) < weekMs)
+
   return (
-    <div style={{ maxWidth: 860 }}>
+    <div style={{ maxWidth: 860, animation: 'fadeIn 0.28s ease' }}>
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 11, color: '#c8f542', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>History</div>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 28, fontWeight: 400, letterSpacing: '-0.02em' }}>Job history</h1>
-        <p style={{ fontSize: 13, color: '#555', marginTop: 6 }}>All your past TTS and transcription jobs.</p>
+        <div style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6, fontWeight: 600 }}>history</div>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 28, fontWeight: 300, letterSpacing: '-0.02em' }}>your jobs</h1>
+          {weekJobs.length > 0 && (
+            <div style={{ fontSize: 12, color: 'var(--text-3)', paddingBottom: 4 }}>
+              <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{weekJobs.length}</span> generation{weekJobs.length !== 1 ? 's' : ''} this week
+            </div>
+          )}
+        </div>
       </div>
 
+      {/* Filter pills */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
         {(['all', 'tts', 'transcription'] as const).map(f => (
           <button key={f} onClick={() => setFilter(f)}
-            style={{ padding: '6px 14px', borderRadius: 20, border: 'none', fontSize: 12, background: filter === f ? '#c8f542' : '#1a1a1a', color: filter === f ? '#0a0a0a' : '#666' }}>
-            {f === 'all' ? 'All' : f === 'tts' ? 'Text to Speech' : 'Transcription'}
+            style={{
+              padding: '6px 14px', borderRadius: 20,
+              border: `1px solid ${filter === f ? 'var(--accent)' : 'var(--border)'}`,
+              background: filter === f ? 'var(--accent)' : 'transparent',
+              color: filter === f ? '#0a0a0a' : 'var(--text-3)',
+              fontSize: 12, fontWeight: filter === f ? 600 : 400,
+              cursor: 'pointer', transition: 'var(--transition)',
+            }}>
+            {f === 'all' ? 'all' : f === 'tts' ? 'voiceover' : 'transcription'}
           </button>
         ))}
       </div>
 
       {loading ? (
-        <div style={{ color: '#444', fontSize: 13 }}>Loading...</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="skeleton" style={{ height: 64, borderRadius: 12 }} />
+          ))}
+        </div>
       ) : jobs.length === 0 ? (
-        <div style={{ padding: 40, border: '1px dashed #1a1a1a', borderRadius: 12, textAlign: 'center' }}>
-          <div style={{ fontSize: 28, marginBottom: 10, opacity: 0.3 }}>📋</div>
-          <div style={{ fontSize: 13, color: '#444' }}>No jobs yet</div>
+        <div style={{ padding: 48, border: '1px dashed var(--border)', borderRadius: 16, textAlign: 'center' }}>
+          <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.3 }}>📋</div>
+          <div style={{ fontSize: 14, color: 'var(--text-3)', marginBottom: 16 }}>nothing here yet.</div>
+          <Link href="/dashboard/tts" className="btn-accent" style={{ display: 'inline-flex', fontSize: 13 }}>generate your first voiceover →</Link>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {jobs.map(job => (
-            <div key={job.id} style={{ padding: '14px 16px', background: '#0f0f0f', border: '1px solid #1a1a1a', borderRadius: 12 }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: job.output_url ? 12 : 0 }}>
-                <div style={{ fontSize: 18, marginTop: 1 }}>
-                  {job.type === 'tts' ? '📝' : job.type === 'transcription' ? '🎙' : '🎬'}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, fontWeight: 500, color: '#e8e8e8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{job.type}</span>
-                    <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 20,
-                      background: job.status === 'completed' ? '#0d1a08' : job.status === 'failed' ? '#1a0808' : '#111',
-                      color: job.status === 'completed' ? '#c8f542' : job.status === 'failed' ? '#e05555' : '#555',
-                      border: `1px solid ${job.status === 'completed' ? '#2a3a1a' : job.status === 'failed' ? '#3a1010' : '#1e1e1e'}` }}>
-                      {job.status}
-                    </span>
-                    <span style={{ fontSize: 11, color: '#333', marginLeft: 'auto' }}>{fmt(job.created_at)}</span>
+          {jobs.map(job => {
+            const isOpen = expanded.has(job.id)
+            const inputText = typeof job.input?.text === 'string' ? job.input.text : null
+            const transcript = typeof job.input?.transcript === 'string' ? job.input.transcript : null
+            const hasAudio = job.status === 'completed' && job.output_url && job.type === 'tts'
+            const hasTx = job.type === 'transcription' && transcript
+
+            return (
+              <div key={job.id} style={{
+                background: 'var(--bg-2)',
+                border: '1px solid var(--border)',
+                borderRadius: 14,
+                overflow: 'hidden',
+                transition: 'border-color 0.15s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--border-2)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+              >
+                {/* Row header */}
+                <div
+                  onClick={() => (hasAudio || hasTx) && toggleExpand(job.id)}
+                  style={{
+                    padding: '14px 16px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 12,
+                    cursor: hasAudio || hasTx ? 'pointer' : 'default',
+                  }}
+                >
+                  <div style={{ fontSize: 18, marginTop: 1, flexShrink: 0 }}>
+                    {job.type === 'tts' ? '📝' : job.type === 'transcription' ? '🎙' : '🎬'}
                   </div>
-                  {job.type === 'tts' && typeof job.input.text === 'string' && (
-                    <div style={{ fontSize: 12, color: '#555', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      &quot;{job.input.text.slice(0, 120)}&quot;
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        {job.type === 'tts' ? 'voiceover' : job.type}
+                      </span>
+                      <span style={{
+                        fontSize: 10, padding: '2px 7px', borderRadius: 20,
+                        background: job.status === 'completed' ? 'var(--accent-dim)' : job.status === 'failed' ? 'var(--danger-dim)' : 'var(--bg-3)',
+                        color: job.status === 'completed' ? 'var(--accent)' : job.status === 'failed' ? 'var(--danger)' : 'var(--text-3)',
+                        border: `1px solid ${job.status === 'completed' ? 'rgba(200,245,66,0.2)' : job.status === 'failed' ? 'rgba(224,85,85,0.2)' : 'var(--border)'}`,
+                      }}>
+                        {job.status}
+                      </span>
+                      <span style={{ fontSize: 11, color: 'var(--text-4)', marginLeft: 'auto' }}>{fmt(job.created_at)}</span>
                     </div>
-                  )}
-                  {job.type === 'transcription' && typeof job.input.transcript === 'string' && (
-                    <div style={{ fontSize: 12, color: '#555', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      &quot;{job.input.transcript.slice(0, 120)}&quot;
+                    {inputText && (
+                      <div style={{ fontSize: 12, color: 'var(--text-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        &quot;{inputText.slice(0, 100)}{inputText.length > 100 ? '…' : ''}&quot;
+                      </div>
+                    )}
+                    {transcript && !inputText && (
+                      <div style={{ fontSize: 12, color: 'var(--text-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {transcript.slice(0, 100)}{transcript.length > 100 ? '…' : ''}
+                      </div>
+                    )}
+                    {job.status === 'failed' && job.error && (
+                      <div style={{ fontSize: 11, color: 'var(--danger)', marginTop: 2 }}>error: {job.error}</div>
+                    )}
+                  </div>
+                  {(hasAudio || hasTx) && (
+                    <div style={{ fontSize: 14, color: 'var(--text-4)', flexShrink: 0, transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                      ↓
                     </div>
-                  )}
-                  {job.status === 'failed' && job.error && (
-                    <div style={{ fontSize: 11, color: '#e05555', marginTop: 2 }}>Error: {job.error}</div>
                   )}
                 </div>
+
+                {/* Expanded content */}
+                {isOpen && (
+                  <div style={{ padding: '0 16px 16px', borderTop: '1px solid var(--border)', paddingTop: 16, animation: 'slideDown 0.2s ease' }}>
+                    {hasAudio && job.output_url && (
+                      <div style={{ marginBottom: 14 }}>
+                        <WaveformPlayer src={job.output_url} />
+                      </div>
+                    )}
+
+                    {hasTx && transcript && (
+                      <div style={{ marginBottom: 14 }}>
+                        <div style={{
+                          padding: '12px 14px',
+                          background: 'var(--bg-3)',
+                          border: '1px solid var(--border)',
+                          borderRadius: 10,
+                          fontSize: 13,
+                          color: 'var(--text-2)',
+                          lineHeight: 1.7,
+                          maxHeight: 160,
+                          overflowY: 'auto',
+                        }}>
+                          {transcript}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action buttons */}
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      {hasAudio && job.output_url && (
+                        <a
+                          href={job.output_url}
+                          download={`omnidub-${job.id}.mp3`}
+                          style={{
+                            fontSize: 12, color: 'var(--text-3)',
+                            padding: '6px 12px',
+                            border: '1px solid var(--border)',
+                            borderRadius: 8,
+                            textDecoration: 'none',
+                            display: 'inline-flex', alignItems: 'center', gap: 4,
+                          }}
+                        >
+                          ↓ download
+                        </a>
+                      )}
+                      {hasAudio && (
+                        <button
+                          onClick={() => shareJob(job.id)}
+                          style={{
+                            fontSize: 12, color: 'var(--text-3)',
+                            padding: '6px 12px',
+                            border: '1px solid var(--border)',
+                            borderRadius: 8,
+                            background: 'none',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          ↗ share
+                        </button>
+                      )}
+                      {hasTx && transcript && (
+                        <button
+                          onClick={() => copyTranscript(transcript)}
+                          style={{
+                            fontSize: 12, color: 'var(--text-3)',
+                            padding: '6px 12px',
+                            border: '1px solid var(--border)',
+                            borderRadius: 8,
+                            background: 'none',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          copy text
+                        </button>
+                      )}
+                      {job.status === 'failed' && (
+                        <Link
+                          href={`/dashboard/${job.type}`}
+                          style={{
+                            fontSize: 12, color: 'var(--accent)',
+                            padding: '6px 12px',
+                            border: '1px solid rgba(200,245,66,0.2)',
+                            borderRadius: 8,
+                            textDecoration: 'none',
+                          }}
+                        >
+                          try again →
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-              {job.status === 'completed' && job.output_url && job.type === 'tts' && (
-                <div style={{ paddingLeft: 30 }}>
-                  <audio controls src={job.output_url} style={{ width: '100%', maxWidth: 400, height: 32 }} />
-                  <a href={job.output_url} download={`${job.id}.mp3`}
-                    style={{ display: 'inline-block', marginTop: 6, fontSize: 11, color: '#555', textDecoration: 'none' }}>
-                    ↓ Download
-                  </a>
-                </div>
-              )}
-              {job.type === 'transcription' && typeof job.input.transcript === 'string' && (
-                <div style={{ paddingLeft: 30, marginTop: 8 }}>
-                  <div style={{ padding: '10px 12px', background: '#141414', borderRadius: 8, fontSize: 12, color: '#888', lineHeight: 1.6, maxHeight: 80, overflow: 'hidden' }}>
-                    {job.input.transcript}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

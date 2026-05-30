@@ -13,7 +13,6 @@ services:
       - HF_HOME=/app/omnivoice_data/huggingface
       - OMNIVOICE_DATA_DIR=/app/omnivoice_data
       - OMNIVOICE_BIND_HOST=0.0.0.0
-    command: uvicorn backend.main:app --host 0.0.0.0 --port 3900
     ports:
       - "3900:3900"
     volumes:

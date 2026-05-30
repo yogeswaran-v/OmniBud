@@ -1,18 +1,78 @@
 'use client'
-import { useState } from 'react'
-import { VOICES } from '@/lib/constants'
-import { useJobPoller, ProgressBar, OutputPlayer, LanguageSelector, SubmitButton } from './JobShared'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { VOICES, ALL_LANGUAGES, FREE_LANGUAGES, PLAN_LIMITS } from '@/lib/constants'
+import { useJobPoller } from './JobShared'
+import WaveformPlayer from '@/components/ui/WaveformPlayer'
+import ParticleBurst from '@/components/ui/ParticleBurst'
+import UpgradeModal, { UpgradeTrigger } from '@/components/ui/UpgradeModal'
+import type { Profile } from '@/types'
 
-export default function TTSTool() {
+interface Props { profile: Profile; usageMinutes: number }
+
+const CHARS_PER_MINUTE = 800
+
+export default function TTSTool({ profile, usageMinutes }: Props) {
   const [text, setText] = useState('')
   const [voiceId, setVoiceId] = useState('1')
   const [language, setLanguage] = useState('English')
   const [jobId, setJobId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [burst, setBurst] = useState(false)
+  const [isFirstJob, setIsFirstJob] = useState(false)
+  const [upgradeTrigger, setUpgradeTrigger] = useState<UpgradeTrigger | null>(null)
+  const [previewPlaying, setPreviewPlaying] = useState<string | null>(null)
+  const [previewUrls, setPreviewUrls] = useState<Record<string, string>>({})
+  const [previewLoading, setPreviewLoading] = useState<string | null>(null)
+  const submitRef = useRef<HTMLButtonElement>(null)
   const job = useJobPoller(jobId)
 
+  const plan = profile.plan as 'free' | 'pro'
+  const limits = PLAN_LIMITS[plan]
+  const remaining = limits.minutesPerDay - usageMinutes
+  const estimatedMins = text.length / CHARS_PER_MINUTE
+  const pctUsed = (usageMinutes / limits.minutesPerDay) * 100
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); submitRef.current?.click() }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  // First job detection
+  useEffect(() => {
+    const key = 'omnidub_had_job'
+    if (!localStorage.getItem(key)) setIsFirstJob(true)
+  }, [])
+
+  // Particle burst on first completion
+  useEffect(() => {
+    if (job?.status === 'completed' && isFirstJob) {
+      setBurst(true)
+      localStorage.setItem('omnidub_had_job', '1')
+      setTimeout(() => setBurst(false), 1000)
+    }
+  }, [job?.status, isFirstJob])
+
+  const playPreview = useCallback(async (id: string) => {
+    if (previewPlaying === id) { setPreviewPlaying(null); return }
+    if (previewUrls[id]) { setPreviewPlaying(id); return }
+    setPreviewLoading(id)
+    try {
+      const res = await fetch(`/api/voices/preview?id=${id}`)
+      if (!res.ok) throw new Error()
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      setPreviewUrls(prev => ({ ...prev, [id]: url }))
+      setPreviewPlaying(id)
+    } catch { /* silent */ } finally { setPreviewLoading(null) }
+  }, [previewPlaying, previewUrls])
+
   const handleSubmit = async () => {
+    if (remaining <= 0) { setUpgradeTrigger('daily_limit'); return }
     setLoading(true); setError('')
     const res = await fetch('/api/jobs/submit', {
       method: 'POST',
@@ -20,61 +80,236 @@ export default function TTSTool() {
       body: JSON.stringify({ type: 'tts', text, voice_id: voiceId, language }),
     })
     const data = await res.json()
-    if (data.error) { setError(data.error === 'daily_limit_reached' ? "Daily limit reached. Upgrade to Pro." : data.error); setLoading(false) }
-    else { setJobId(data.job_id); setLoading(false) }
+    if (data.error) {
+      setError(data.error === 'daily_limit_reached' ? 'daily_limit_reached' : data.error)
+      if (data.error === 'daily_limit_reached') setUpgradeTrigger('daily_limit')
+      setLoading(false)
+    } else {
+      setJobId(data.job_id)
+      setLoading(false)
+    }
   }
 
+  const handleRegenerate = () => { setJobId(null); handleSubmit() }
+  const handleShare = () => { if (job?.id) { navigator.clipboard.writeText(`${window.location.origin}/share/${job.id}`).catch(() => {}); } }
+
+  const usageColor = pctUsed >= 95 ? 'var(--danger)' : pctUsed >= 80 ? 'var(--warning)' : 'var(--accent)'
+
   return (
-    <div style={{ maxWidth: 720, animation: 'fadeIn 0.25s ease' }}>
+    <div style={{ maxWidth: 700, animation: 'fadeIn 0.28s ease', position: 'relative' }}>
+      {burst && <ParticleBurst trigger={burst} x={50} y={60} />}
+
+      {/* Header */}
       <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 11, color: '#c8f542', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Text to Speech</div>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 28, fontWeight: 400, letterSpacing: '-0.02em' }}>Turn text into natural speech</h1>
-        <p style={{ fontSize: 13, color: '#555', marginTop: 6 }}>Choose a voice, type your script, pick a language. Download broadcast-quality audio.</p>
+        <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 8, fontWeight: 600 }}>text to speech</div>
+        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 26, fontWeight: 300, letterSpacing: '-0.02em', marginBottom: 6 }}>your words, any voice.</h1>
+        <p style={{ fontSize: 13, color: 'var(--text-3)', lineHeight: 1.6 }}>pick a voice, write your script, hit generate. download broadcast-quality audio.</p>
       </div>
 
-      {error && <div style={{ padding: '12px 16px', background: '#1a0808', border: '1px solid #3a1010', borderRadius: 10, fontSize: 13, color: '#e05555', marginBottom: 20 }}>{error}</div>}
+      {/* Error */}
+      {error && error !== 'daily_limit_reached' && (
+        <div style={{ padding: '12px 16px', background: 'var(--danger-dim)', border: '1px solid rgba(224,85,85,0.25)', borderRadius: 10, fontSize: 13, color: 'var(--danger)', marginBottom: 20 }}>{error}</div>
+      )}
 
-      {/* Voice picker */}
-      <div style={{ marginBottom: 20 }}>
-        <label style={{ fontSize: 11, color: '#555', display: 'block', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Voice</label>
+      {/* Usage bar (shows at ≥50%) */}
+      {pctUsed >= 50 && (
+        <div style={{ marginBottom: 20, padding: '10px 14px', background: pctUsed >= 80 ? (pctUsed >= 95 ? 'var(--danger-dim)' : 'var(--warning-dim)') : 'var(--bg-3)', border: `1px solid ${pctUsed >= 95 ? 'rgba(224,85,85,0.25)' : pctUsed >= 80 ? 'rgba(240,160,48,0.25)' : 'var(--border)'}`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, animation: 'slideDown 0.2s ease' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 12, color: pctUsed >= 80 ? usageColor : 'var(--text-2)' }}>
+              {pctUsed >= 95 ? `⚠️ ${remaining.toFixed(1)} min left today` : pctUsed >= 80 ? `running low — ${remaining.toFixed(1)} min left` : `${remaining.toFixed(1)} min left today`}
+            </span>
+            {plan === 'free' && <span style={{ fontSize: 11, color: 'var(--text-3)' }}>· Pro gets 120 min/day</span>}
+          </div>
+          {plan === 'free' && (
+            <button onClick={() => setUpgradeTrigger('daily_limit')} style={{ fontSize: 11, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: 600 }}>upgrade →</button>
+          )}
+        </div>
+      )}
+
+      {/* Voice cards */}
+      <div style={{ marginBottom: 24 }}>
+        <label style={{ fontSize: 10, color: 'var(--text-3)', display: 'block', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>voice</label>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-          {VOICES.map(v => (
-            <div key={v.id} onClick={() => setVoiceId(v.id)}
-              style={{ padding: '12px 14px', borderRadius: 10, cursor: 'pointer', border: `1.5px solid ${voiceId === v.id ? '#c8f542' : '#1a1a1a'}`, background: voiceId === v.id ? '#131a0a' : '#0f0f0f', transition: 'all 0.15s' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', background: voiceId === v.id ? '#c8f542' : '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, color: voiceId === v.id ? '#0a0a0a' : '#444', flexShrink: 0 }}>
-                  {v.name[0]}
+          {VOICES.map(v => {
+            const selected = voiceId === v.id
+            const locked = v.pro && plan === 'free'
+            return (
+              <div
+                key={v.id}
+                onClick={() => locked ? setUpgradeTrigger('pro_voice') : setVoiceId(v.id)}
+                style={{
+                  padding: '14px 12px',
+                  borderRadius: 12,
+                  cursor: 'pointer',
+                  border: selected ? '1px solid transparent' : `1px solid var(--border)`,
+                  background: selected ? 'rgba(200,245,66,0.06)' : locked ? 'var(--bg-2)' : 'var(--bg-2)',
+                  opacity: locked ? 0.55 : 1,
+                  transition: 'var(--transition)',
+                  position: 'relative',
+                  ...(selected ? { boxShadow: '0 0 0 1px var(--accent), 0 4px 20px rgba(200,245,66,0.1)' } : {}),
+                }}
+                onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border-2)' }}
+                onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border)' }}
+              >
+                {v.pro && (
+                  <span style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: 'var(--accent-2-dim)', color: '#a490ff', border: '1px solid rgba(123,97,255,0.3)', padding: '1px 6px', borderRadius: 10, fontWeight: 700, letterSpacing: '0.06em' }}>PRO</span>
+                )}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', marginBottom: 2 }}>{v.name}</div>
+                    <div style={{ fontSize: 10, color: 'var(--text-3)' }}>{v.accent} · {v.tone}</div>
+                  </div>
+                  <button
+                    onClick={e => { e.stopPropagation(); if (!locked) playPreview(v.id) }}
+                    style={{
+                      width: 26, height: 26, borderRadius: '50%',
+                      background: previewPlaying === v.id ? 'var(--accent)' : 'var(--bg-4)',
+                      border: `1px solid ${previewPlaying === v.id ? 'transparent' : 'var(--border)'}`,
+                      color: previewPlaying === v.id ? '#0a0a0a' : 'var(--text-3)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 9, flexShrink: 0,
+                      transition: 'var(--transition)',
+                    }}
+                    title="preview voice"
+                  >
+                    {previewLoading === v.id ? <span className="spinner" style={{ width: 10, height: 10 }} /> : previewPlaying === v.id ? '⏹' : '▶'}
+                  </button>
                 </div>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 500, color: '#e8e8e8' }}>{v.name}</div>
-                  <div style={{ fontSize: 10, color: '#444', marginTop: 1 }}>{v.tone}</div>
-                </div>
+                {/* Tiny idle waveform when playing preview */}
+                {previewPlaying === v.id && previewUrls[v.id] && (
+                  <audio
+                    src={previewUrls[v.id]}
+                    autoPlay
+                    onEnded={() => setPreviewPlaying(null)}
+                    style={{ display: 'none' }}
+                  />
+                )}
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
 
       {/* Script */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-          <label style={{ fontSize: 11, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Script</label>
-          <span style={{ fontSize: 11, color: '#333' }}>{text.length}/1000</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <label style={{ fontSize: 10, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>script</label>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <span style={{ fontSize: 11, color: text.length > 900 ? 'var(--warning)' : 'var(--text-4)' }}>{text.length}/1000</span>
+            {text.length > 0 && (
+              <span style={{ fontSize: 11, color: 'var(--text-3)' }}>~{estimatedMins.toFixed(1)} min</span>
+            )}
+          </div>
         </div>
-        <textarea value={text} onChange={e => setText(e.target.value.slice(0, 1000))}
-          placeholder="Enter your script here..."
-          rows={6} style={{ width: '100%', padding: '12px 14px', fontSize: 13, lineHeight: 1.7 }} />
+        <textarea
+          value={text}
+          onChange={e => setText(e.target.value.slice(0, 1000))}
+          placeholder="enter your script here..."
+          rows={6}
+          style={{ width: '100%', padding: '13px 15px', fontSize: 13, lineHeight: 1.7, borderRadius: 12, resize: 'vertical' }}
+        />
       </div>
 
+      {/* Language pills */}
       <div style={{ marginBottom: 24 }}>
-        <LanguageSelector value={language} onChange={setLanguage} plan="free" />
+        <label style={{ fontSize: 10, color: 'var(--text-3)', display: 'block', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>language</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {ALL_LANGUAGES.map(lang => {
+            const locked = plan === 'free' && !FREE_LANGUAGES.includes(lang)
+            const active = language === lang
+            return (
+              <button
+                key={lang}
+                onClick={() => locked ? setUpgradeTrigger('generic') : setLanguage(lang)}
+                style={{
+                  padding: '5px 13px', borderRadius: 20, fontSize: 12,
+                  background: active ? 'var(--accent)' : locked ? 'transparent' : 'var(--bg-3)',
+                  color: active ? '#0a0a0a' : locked ? 'var(--text-4)' : 'var(--text-2)',
+                  border: `1px solid ${active ? 'transparent' : locked ? 'var(--border)' : 'var(--border)'}`,
+                  cursor: locked ? 'default' : 'pointer',
+                  opacity: locked ? 0.5 : 1,
+                  transition: 'var(--transition)',
+                  display: 'flex', alignItems: 'center', gap: 4,
+                }}
+              >
+                {lang}{locked && <span style={{ fontSize: 9 }}>🔒</span>}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      <SubmitButton onClick={handleSubmit} loading={loading} disabled={!text} label="Generate Speech →" />
+      {/* Pre-generation cost line */}
+      {text.length > 0 && (
+        <div style={{ marginBottom: 16, fontSize: 12, color: 'var(--text-3)', padding: '8px 12px', background: 'var(--bg-3)', borderRadius: 8, border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6 }}>
+          <span>uses ~{estimatedMins.toFixed(1)} min · {remaining.toFixed(1)} remaining today</span>
+          {plan === 'free' && <span style={{ color: 'var(--text-4)' }}>Pro gets 120 min/day</span>}
+        </div>
+      )}
 
-      {job && (job.status === 'pending' || job.status === 'processing') && <ProgressBar progress={job.progress} status={job.status} />}
-      {job?.status === 'completed' && job.output_url && <OutputPlayer outputUrl={job.output_url} fileName="speech_output.mp3" />}
-      {job?.status === 'failed' && <div style={{ marginTop: 16, padding: '14px', background: '#1a0808', border: '1px solid #3a1010', borderRadius: 10, fontSize: 13, color: '#e05555' }}>Job failed: {job.error}. Please try again.</div>}
+      {/* Submit */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <button
+          ref={submitRef}
+          onClick={handleSubmit}
+          disabled={loading || !text.trim() || remaining <= 0}
+          className="btn-accent"
+          style={{ opacity: (!text.trim() || remaining <= 0) ? 0.5 : 1 }}
+        >
+          {loading ? <><span className="spinner" /> generating...</> : remaining <= 0 ? 'daily limit reached' : 'generate ↵'}
+        </button>
+        {remaining <= 0 && plan === 'free' && (
+          <button onClick={() => setUpgradeTrigger('daily_limit')} className="btn-ghost" style={{ fontSize: 12 }}>upgrade for more →</button>
+        )}
+        <span style={{ fontSize: 11, color: 'var(--text-4)', marginLeft: 4 }}>⌘↵ to submit</span>
+      </div>
+
+      {/* Job progress */}
+      {job && (job.status === 'pending' || job.status === 'processing') && (
+        <div style={{ marginTop: 20, padding: 18, background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 12, animation: 'fadeIn 0.2s ease' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+            <span style={{ fontSize: 12, color: 'var(--text-2)' }}>
+              {job.status === 'pending' ? '⏳ queued...' : '⚡ generating on GPU...'}
+            </span>
+            <span style={{ fontSize: 12, color: 'var(--text-3)' }}>{job.progress}%</span>
+          </div>
+          <div style={{ height: 3, background: 'var(--bg-4)', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${job.progress}%`, background: 'var(--accent)', borderRadius: 3, transition: 'width 0.5s ease', animation: 'glow 2s ease-in-out infinite' }} />
+          </div>
+        </div>
+      )}
+
+      {/* Output */}
+      {job?.status === 'completed' && job.output_url && (
+        <div style={{ marginTop: 20, padding: 20, background: 'rgba(200,245,66,0.03)', border: '1px solid rgba(200,245,66,0.15)', borderRadius: 14, animation: 'slideUp 0.3s ease' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <span style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>✓ generated</span>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <a href={job.output_url} download="omnidub-speech.mp3" className="btn-ghost" style={{ fontSize: 11, padding: '5px 12px' }}>↓ download</a>
+              <button onClick={handleShare} className="btn-ghost" style={{ fontSize: 11, padding: '5px 12px' }}>↗ share</button>
+              <button onClick={handleRegenerate} className="btn-ghost" style={{ fontSize: 11, padding: '5px 12px' }}>↺ regenerate</button>
+            </div>
+          </div>
+          <WaveformPlayer src={job.output_url} />
+          {plan === 'free' && (
+            <div style={{ marginTop: 12, fontSize: 12, color: 'var(--text-3)', paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+              this file is watermarked in the filename.{' '}
+              <button onClick={() => setUpgradeTrigger('generic')} style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 12, cursor: 'pointer', fontWeight: 500 }}>remove it with Pro →</button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Failure */}
+      {job?.status === 'failed' && (
+        <div style={{ marginTop: 16, padding: 16, background: 'var(--danger-dim)', border: '1px solid rgba(224,85,85,0.25)', borderRadius: 12, animation: 'fadeIn 0.2s ease' }}>
+          <div style={{ fontSize: 13, color: 'var(--danger)', marginBottom: 8 }}>generation failed: {job.error}</div>
+          <button onClick={handleRegenerate} className="btn-ghost" style={{ fontSize: 12 }}>try again →</button>
+        </div>
+      )}
+
+      {/* Upgrade modal */}
+      {upgradeTrigger && <UpgradeModal trigger={upgradeTrigger} onClose={() => setUpgradeTrigger(null)} />}
     </div>
   )
 }
