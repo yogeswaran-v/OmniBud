@@ -11,6 +11,15 @@ interface Props { profile: Profile; usageMinutes: number }
 
 const CHARS_PER_MINUTE = 800
 
+const VOICE_WAVEFORMS: Record<string, string> = {
+  '1': '0,16 8,8 16,20 24,4 32,18 40,10 48,22 56,6 64,16',
+  '2': '0,12 8,20 16,6 24,18 32,8 40,22 48,4 56,16 64,10',
+  '3': '0,18 8,6 16,22 24,10 32,18 40,4 48,20 56,12 64,16',
+  '4': '0,10 8,22 16,8 24,20 32,6 40,18 48,10 56,22 64,14',
+  '5': '0,14 8,4 16,20 24,8 32,22 40,6 48,18 56,10 64,20',
+  '6': '0,20 8,10 16,18 24,6 32,20 40,12 48,22 56,8 64,16',
+}
+
 export default function TTSTool({ profile, usageMinutes }: Props) {
   const [text, setText] = useState('')
   const [voiceId, setVoiceId] = useState('1')
@@ -145,17 +154,16 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
                 onClick={() => locked ? setUpgradeTrigger('pro_voice') : setVoiceId(v.id)}
                 style={{
                   padding: '14px 12px',
-                  borderRadius: 12,
+                  borderRadius: 'var(--radius)',
                   cursor: 'pointer',
-                  border: selected ? '1px solid transparent' : `1px solid var(--border)`,
-                  background: selected ? 'rgba(200,245,66,0.06)' : locked ? 'var(--bg-2)' : 'var(--bg-2)',
-                  opacity: locked ? 0.55 : 1,
+                  background: selected ? 'rgba(200,245,66,0.06)' : 'rgba(255,255,255,0.025)',
+                  boxShadow: selected ? 'var(--shadow-accent)' : 'var(--shadow-1)',
+                  opacity: locked ? 0.5 : 1,
                   transition: 'var(--transition)',
                   position: 'relative',
-                  ...(selected ? { boxShadow: '0 0 0 1px var(--accent), 0 4px 20px rgba(200,245,66,0.1)' } : {}),
                 }}
-                onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border-2)' }}
-                onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border)' }}
+                onMouseEnter={e => { if (!selected && !locked) (e.currentTarget as HTMLDivElement).style.boxShadow = 'var(--shadow-2)' }}
+                onMouseLeave={e => { if (!selected && !locked) (e.currentTarget as HTMLDivElement).style.boxShadow = 'var(--shadow-1)' }}
               >
                 {v.pro && (
                   <span style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: 'var(--accent-2-dim)', color: '#a490ff', border: '1px solid rgba(123,97,255,0.3)', padding: '1px 6px', borderRadius: 10, fontWeight: 700, letterSpacing: '0.06em' }}>PRO</span>
@@ -181,14 +189,12 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
                     {previewLoading === v.id ? <span className="spinner" style={{ width: 10, height: 10 }} /> : previewPlaying === v.id ? '⏹' : '▶'}
                   </button>
                 </div>
-                {/* Tiny idle waveform when playing preview */}
+                {/* Voice waveform signature */}
+                <svg width="100%" height="22" viewBox="0 0 64 22" preserveAspectRatio="none" style={{ opacity: selected ? 0.8 : 0.25, transition: 'opacity 0.2s', marginTop: 8, display: 'block' }}>
+                  <polyline points={VOICE_WAVEFORMS[v.id] ?? VOICE_WAVEFORMS['1']} fill="none" stroke={selected ? 'var(--accent)' : 'var(--text-3)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
                 {previewPlaying === v.id && previewUrls[v.id] && (
-                  <audio
-                    src={previewUrls[v.id]}
-                    autoPlay
-                    onEnded={() => setPreviewPlaying(null)}
-                    style={{ display: 'none' }}
-                  />
+                  <audio src={previewUrls[v.id]} autoPlay onEnded={() => setPreviewPlaying(null)} style={{ display: 'none' }} />
                 )}
               </div>
             )
@@ -212,7 +218,9 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
           onChange={e => setText(e.target.value.slice(0, 1000))}
           placeholder="enter your script here..."
           rows={6}
-          style={{ width: '100%', padding: '13px 15px', fontSize: 13, lineHeight: 1.7, borderRadius: 12, resize: 'vertical' }}
+          style={{ width: '100%', padding: '13px 15px', fontSize: 13, lineHeight: 1.7, borderRadius: 'var(--radius)', resize: 'vertical', borderLeft: '3px solid transparent', transition: 'border-left 0.15s' }}
+          onFocus={e => { (e.target as HTMLTextAreaElement).style.borderLeft = '3px solid rgba(200,245,66,0.5)' }}
+          onBlur={e => { (e.target as HTMLTextAreaElement).style.borderLeft = '3px solid transparent' }}
         />
       </div>
 
@@ -259,10 +267,10 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
           ref={submitRef}
           onClick={handleSubmit}
           disabled={loading || !text.trim() || remaining <= 0}
-          className="btn-accent"
-          style={{ opacity: (!text.trim() || remaining <= 0) ? 0.5 : 1 }}
+          className={`btn-accent${loading ? ' btn-shimmer' : ''}`}
+          style={{ width: '100%', padding: '16px', fontSize: 15, justifyContent: 'center', borderRadius: 'var(--radius)', opacity: (!text.trim() || remaining <= 0) ? 0.45 : 1 }}
         >
-          {loading ? <><span className="spinner" /> generating...</> : remaining <= 0 ? 'daily limit reached' : 'generate ↵'}
+          {loading ? <><span className="spinner" /> generating…</> : remaining <= 0 ? 'daily limit reached' : 'generate ↵'}
         </button>
         {remaining <= 0 && plan === 'free' && (
           <button onClick={() => setUpgradeTrigger('daily_limit')} className="btn-ghost" style={{ fontSize: 12 }}>upgrade for more →</button>
@@ -287,7 +295,7 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
 
       {/* Output */}
       {job?.status === 'completed' && job.output_url && (
-        <div style={{ marginTop: 20, padding: 20, background: 'rgba(200,245,66,0.03)', border: '1px solid rgba(200,245,66,0.15)', borderRadius: 14, animation: 'slideUp 0.3s ease' }}>
+        <div style={{ marginTop: 20, padding: 20, background: 'rgba(200,245,66,0.04)', boxShadow: 'var(--shadow-accent)', borderRadius: 'var(--radius)', animation: 'springIn 0.45s var(--ease-spring) both' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <span style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>✓ generated</span>
             <div style={{ display: 'flex', gap: 8 }}>

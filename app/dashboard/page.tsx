@@ -4,6 +4,24 @@ import Link from 'next/link'
 import WaveformPlayer from '@/components/ui/WaveformPlayer'
 import { PLAN_LIMITS } from '@/lib/constants'
 
+function UsageRing({ used, total, color }: { used: number; total: number; color: string }) {
+  const pct = Math.min(used / total, 1)
+  const r = 28, circ = 2 * Math.PI * r, dash = pct * circ
+  return (
+    <div style={{ position: 'relative', width: 72, height: 72, flexShrink: 0 }}>
+      <svg width={72} height={72} style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx={36} cy={36} r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={5} />
+        <circle cx={36} cy={36} r={r} fill="none" stroke={color} strokeWidth={5}
+          strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
+          style={{ transition: 'stroke-dasharray 0.8s var(--ease-out)' }} />
+      </svg>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color, fontFamily: 'var(--font-mono)' }}>
+        {Math.round(pct * 100)}%
+      </div>
+    </div>
+  )
+}
+
 export default async function DashboardHome() {
   const supabase = createServerSupabase()
   const { data: { user } } = await supabase.auth.getUser()
@@ -49,7 +67,7 @@ export default async function DashboardHome() {
 
       {/* Return visit hook */}
       {showReturnHook && lastAudio?.output_url && (
-        <div style={{ marginBottom: 28, padding: 20, background: 'rgba(200,245,66,0.03)', border: '1px solid rgba(200,245,66,0.12)', borderRadius: 14, animation: 'slideDown 0.3s ease' }}>
+        <div style={{ marginBottom: 28, padding: 20, background: 'rgba(200,245,66,0.04)', boxShadow: 'var(--shadow-accent)', borderRadius: 'var(--radius)', animation: 'slideDown 0.3s ease' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <div>
               <div style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 3 }}>your last generation</div>
@@ -64,20 +82,23 @@ export default async function DashboardHome() {
       )}
 
       {/* Today's usage */}
-      <div style={{ marginBottom: 28, padding: '16px 18px', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 14 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <span style={{ fontSize: 12, color: 'var(--text-2)' }}>today</span>
-          <span style={{ fontSize: 12, color: 'var(--text-3)' }}>{minutesUsed.toFixed(1)} / {limits.minutesPerDay} min</span>
-        </div>
-        <div style={{ height: 4, background: 'var(--bg-4)', borderRadius: 4, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${Math.min(pctUsed, 100)}%`, background: pctUsed >= 95 ? 'var(--danger)' : pctUsed >= 80 ? 'var(--warning)' : 'var(--accent)', borderRadius: 4, transition: 'width 0.6s ease' }} />
-        </div>
-        {plan === 'free' && pctUsed >= 50 && (
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text-3)' }}>
-            Pro gets 120 min/day.{' '}
-            <Link href="/pricing" style={{ color: 'var(--accent)', fontWeight: 500 }}>upgrade →</Link>
+      <div style={{ marginBottom: 28, padding: '16px 18px', background: 'rgba(255,255,255,0.025)', boxShadow: 'var(--shadow-1)', borderRadius: 'var(--radius)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <UsageRing used={minutesUsed} total={limits.minutesPerDay} color={pctUsed >= 95 ? 'var(--danger)' : pctUsed >= 80 ? 'var(--warning)' : 'var(--accent)'} />
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+              <span style={{ fontSize: 12, color: 'var(--text-2)' }}>today</span>
+              <span style={{ fontSize: 12, color: 'var(--text-3)', fontFamily: 'var(--font-mono)' }}>{minutesUsed.toFixed(1)} / {limits.minutesPerDay} min</span>
+            </div>
+            {plan === 'free' && pctUsed >= 50 && (
+              <div style={{ fontSize: 11, color: 'var(--text-3)' }}>
+                Pro gets 120 min/day.{' '}
+                <Link href="/pricing" style={{ color: 'var(--accent)', fontWeight: 500 }}>upgrade →</Link>
+              </div>
+            )}
+            {minutesUsed === 0 && <div style={{ fontSize: 11, color: 'var(--text-4)' }}>no usage yet today</div>}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Quick actions */}
@@ -92,11 +113,11 @@ export default async function DashboardHome() {
             <Link key={card.href} href={card.href}
               className={card.accent ? 'card-hover-accent' : 'card-hover'}
               style={{
-              padding: '16px 14px', borderRadius: 14,
-              background: card.accent ? 'rgba(200,245,66,0.05)' : 'var(--bg-2)',
-              border: `1px solid ${card.accent ? 'rgba(200,245,66,0.2)' : 'var(--border)'}`,
-              display: 'flex', flexDirection: 'column', gap: 8,
-            }}>
+                padding: '18px 16px', borderRadius: 'var(--radius)',
+                background: card.accent ? 'rgba(200,245,66,0.04)' : 'rgba(255,255,255,0.025)',
+                boxShadow: card.accent ? 'var(--shadow-accent)' : 'var(--shadow-1)',
+                display: 'flex', flexDirection: 'column', gap: 8,
+              }}>
               <span style={{ fontSize: 22 }}>{card.icon}</span>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 500, color: card.accent ? 'var(--accent)' : 'var(--text)', marginBottom: 3 }}>{card.label}</div>
@@ -116,7 +137,7 @@ export default async function DashboardHome() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {recentJobs.map(job => (
-              <div key={job.id} style={{ padding: '12px 16px', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div key={job.id} style={{ padding: '12px 16px', background: 'rgba(255,255,255,0.025)', boxShadow: 'var(--shadow-1)', borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: job.status === 'completed' ? 'var(--accent)' : job.status === 'failed' ? 'var(--danger)' : 'var(--text-4)' }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{job.type}</div>

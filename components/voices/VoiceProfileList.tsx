@@ -2,6 +2,16 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { VoiceProfile } from '@/types'
 
+function avatarColor(name: string): string {
+  const colors = ['#7B61FF','#c8f542','#f0a030','#e05555','#4ade80','#60a5fa','#f472b6','#a78bfa']
+  let hash = 0
+  for (const c of name) hash = (hash * 31 + c.charCodeAt(0)) & 0xffffffff
+  return colors[Math.abs(hash) % colors.length]
+}
+function initials(name: string): string {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?'
+}
+
 interface Props {
   onSelect?: (profile: VoiceProfile) => void
   showCreate?: boolean
@@ -75,8 +85,8 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
     <div style={{ maxWidth: 720 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <div>
-          <div style={{ fontSize: 11, color: '#c8f542', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Voice Profiles</div>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 28, fontWeight: 400, letterSpacing: '-0.02em' }}>Your voice library</h1>
+          <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 8, fontWeight: 600 }}>voice profiles</div>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 28, fontWeight: 300, letterSpacing: '-0.025em' }}>your voice library.</h1>
         </div>
         {showCreate && (
           <button onClick={() => setShowForm(!showForm)}
@@ -134,9 +144,12 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
           {profiles.map(p => (
             <div key={p.id}
               onClick={() => onSelect?.(p)}
-              style={{ padding: '14px 16px', background: '#0f0f0f', border: '1px solid #1a1a1a', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 14, cursor: onSelect ? 'pointer' : 'default', transition: 'border-color 0.15s' }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>
-                🎙
+              style={{ padding: '18px 16px', background: 'rgba(255,255,255,0.025)', boxShadow: 'var(--shadow-1)', borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center', gap: 14, cursor: onSelect ? 'pointer' : 'default', transition: 'var(--transition)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'var(--shadow-2)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'var(--shadow-1)' }}
+            >
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: avatarColor(p.name), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#050505', flexShrink: 0 }}>
+                {initials(p.name)}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 500, color: '#e8e8e8', marginBottom: 2 }}>{p.name}</div>

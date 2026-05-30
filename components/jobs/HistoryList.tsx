@@ -119,14 +119,14 @@ export default function HistoryList() {
 
             return (
               <div key={job.id} style={{
-                background: 'var(--bg-2)',
-                border: '1px solid var(--border)',
-                borderRadius: 14,
+                background: 'rgba(255,255,255,0.025)',
+                boxShadow: 'var(--shadow-1)',
+                borderRadius: 'var(--radius)',
                 overflow: 'hidden',
-                transition: 'border-color 0.15s',
+                transition: 'var(--transition)',
               }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--border-2)')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+              onMouseEnter={e => (e.currentTarget.style.boxShadow = 'var(--shadow-2)')}
+              onMouseLeave={e => (e.currentTarget.style.boxShadow = 'var(--shadow-1)')}
               >
                 {/* Row header */}
                 <div
@@ -139,9 +139,10 @@ export default function HistoryList() {
                     cursor: hasAudio || hasTx ? 'pointer' : 'default',
                   }}
                 >
-                  <div style={{ fontSize: 18, marginTop: 1, flexShrink: 0 }}>
-                    {job.type === 'tts' ? '📝' : job.type === 'transcription' ? '🎙' : '🎬'}
-                  </div>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0, marginTop: 4,
+                    background: job.status === 'completed' ? 'var(--accent)' : job.status === 'failed' ? 'var(--danger)' : 'var(--text-4)',
+                    boxShadow: job.status === 'completed' ? '0 0 8px rgba(200,245,66,0.5)' : job.status === 'failed' ? '0 0 8px rgba(224,85,85,0.5)' : 'none',
+                  }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
