@@ -25,7 +25,7 @@ export default function DubbingTool() {
   return (
     <div style={{ maxWidth: 720, animation: 'fadeIn 0.25s ease' }}>
       <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 11, color: '#c8f542', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Video Dubbing</div>
+        <div style={{ fontSize: 11, color: '#f97316', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Video Dubbing</div>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 28, fontWeight: 400, letterSpacing: '-0.02em' }}>Dub your video into 646 languages</h1>
         <p style={{ fontSize: 13, color: '#555', marginTop: 6 }}>Transcribe → translate → re-voice. Full lip-sync-aware pipeline powered by OmniVoice.</p>
       </div>

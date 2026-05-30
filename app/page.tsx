@@ -15,17 +15,18 @@ export default function Home() {
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-      {/* Ambient orbs */}
+      {/* Dot grid + ambient orbs */}
       <div aria-hidden="true" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)', width: 700, height: 500, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(123,97,255,0.14) 0%, transparent 70%)', animation: 'orb 12s ease-in-out infinite' }} />
-        <div style={{ position: 'absolute', top: '40%', right: '-10%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(200,245,66,0.05) 0%, transparent 70%)', animation: 'orb 16s ease-in-out 4s infinite reverse' }} />
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(167,139,250,0.10) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+        <div style={{ position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)', width: 700, height: 500, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(167,139,250,0.14) 0%, transparent 70%)', animation: 'orb 12s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', top: '40%', right: '-10%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(249,115,22,0.06) 0%, transparent 70%)', animation: 'orb 16s ease-in-out 4s infinite reverse' }} />
       </div>
 
       {/* Nav */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 50, height: 60, display: 'flex', alignItems: 'center', padding: '0 28px', gap: 16, background: 'rgba(3,3,3,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid var(--border)' }}>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 50, height: 60, display: 'flex', alignItems: 'center', padding: '0 28px', gap: 16, background: 'rgba(8,8,15,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid var(--border)' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-          <div style={{ width: 28, height: 28, background: 'var(--accent)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(200,245,66,0.3)' }}>
-            <div style={{ width: 8, height: 8, background: '#050505', borderRadius: '50%' }} />
+          <div style={{ width: 28, height: 28, background: 'var(--accent)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(249,115,22,0.30)' }}>
+            <div style={{ width: 8, height: 8, background: '#07070c', borderRadius: '50%' }} />
           </div>
           <span style={{ fontFamily: 'var(--font-serif)', fontSize: 17, letterSpacing: '-0.01em' }}>OmniDub</span>
         </Link>
@@ -38,7 +39,7 @@ export default function Home() {
       {/* Hero */}
       <section style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 24px 96px', maxWidth: 700, margin: '0 auto', width: '100%' }}>
         <div style={{ textAlign: 'center', marginBottom: 48, animation: 'fadeIn 0.5s var(--ease-out) both' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px 4px 8px', background: 'rgba(200,245,66,0.07)', border: '1px solid rgba(200,245,66,0.18)', borderRadius: 20, marginBottom: 24 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px 4px 8px', background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.18)', borderRadius: 20, marginBottom: 24 }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', animation: 'glowPulse 2s ease-in-out infinite' }} />
             <span style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.06em' }}>no account required</span>
           </div>
@@ -76,7 +77,7 @@ export default function Home() {
                 className={f.accent ? 'card-hover-accent' : 'card-hover'}
                 style={{
                   padding: '28px 24px',
-                  background: f.accent ? 'rgba(200,245,66,0.04)' : 'rgba(255,255,255,0.02)',
+                  background: f.accent ? 'rgba(249,115,22,0.04)' : 'rgba(255,255,255,0.02)',
                   boxShadow: f.accent ? 'var(--shadow-accent)' : 'var(--shadow-1)',
                   borderRadius: 'var(--radius-lg)',
                   display: 'flex', flexDirection: 'column', gap: 14,
@@ -114,8 +115,8 @@ export default function Home() {
               ))}
               <Link href="/auth/signup" className="btn-ghost" style={{ display: 'flex', justifyContent: 'center', marginTop: 24, fontSize: 13 }}>get started</Link>
             </div>
-            <div className="gradient-border" style={{ padding: '28px 24px', background: 'rgba(200,245,66,0.03)', borderRadius: 'var(--radius-lg)', position: 'relative' }}>
-              <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'var(--accent)', color: '#050505', fontSize: 10, fontWeight: 700, padding: '3px 14px', borderRadius: 20, letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>MOST POPULAR</div>
+            <div className="gradient-border" style={{ padding: '28px 24px', background: 'rgba(249,115,22,0.03)', borderRadius: 'var(--radius-lg)', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'var(--accent)', color: '#07070c', fontSize: 10, fontWeight: 700, padding: '3px 14px', borderRadius: 20, letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>MOST POPULAR</div>
               <div style={{ fontSize: 10, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14, fontWeight: 600 }}>pro</div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 20 }}>
                 <span style={{ fontFamily: 'var(--font-serif)', fontSize: 44, letterSpacing: '-0.02em' }}>$19</span>

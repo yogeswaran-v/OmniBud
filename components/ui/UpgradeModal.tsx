@@ -51,9 +51,9 @@ export default function UpgradeModal({ onClose, trigger = 'generic' }: Props) {
         {/* Billing toggle */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
           <button onClick={() => setAnnual(false)} style={{ padding: '5px 13px', borderRadius: 20, fontSize: 12, background: !annual ? 'var(--bg-4)' : 'transparent', border: `1px solid ${!annual ? 'var(--border-2)' : 'var(--border)'}`, color: !annual ? 'var(--text)' : 'var(--text-3)' }}>Monthly — $19</button>
-          <button onClick={() => setAnnual(true)} style={{ padding: '5px 13px', borderRadius: 20, fontSize: 12, background: annual ? 'var(--accent-dim)' : 'transparent', border: `1px solid ${annual ? 'rgba(200,245,66,0.3)' : 'var(--border)'}`, color: annual ? 'var(--accent)' : 'var(--text-3)', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button onClick={() => setAnnual(true)} style={{ padding: '5px 13px', borderRadius: 20, fontSize: 12, background: annual ? 'var(--accent-dim)' : 'transparent', border: `1px solid ${annual ? 'rgba(249,115,22,0.30)' : 'var(--border)'}`, color: annual ? 'var(--accent)' : 'var(--text-3)', display: 'flex', alignItems: 'center', gap: 6 }}>
             Annual — $16/mo
-            {annual && <span style={{ background: 'var(--accent)', color: '#0a0a0a', fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 10 }}>SAVE 20%</span>}
+            {annual && <span style={{ background: 'var(--accent)', color: '#07070c', fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 10 }}>SAVE 20%</span>}
           </button>
         </div>
 
@@ -67,12 +67,12 @@ export default function UpgradeModal({ onClose, trigger = 'generic' }: Props) {
               </div>
             ))}
           </div>
-          <div style={{ background: 'rgba(200,245,66,0.04)', border: '1px solid rgba(200,245,66,0.18)', borderRadius: 12, padding: '14px 12px' }}>
+          <div style={{ background: 'rgba(249,115,22,0.04)', border: '1px solid rgba(249,115,22,0.18)', borderRadius: 12, padding: '14px 12px' }}>
             <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10, fontWeight: 600 }}>Pro</div>
             {PRO_FEATURES.map((f, i) => {
               const hl = i === highlightIdx
               return (
-                <div key={f} style={{ display: 'flex', gap: 6, fontSize: 12, color: hl ? 'var(--accent)' : 'var(--text-2)', background: hl ? 'rgba(200,245,66,0.08)' : 'transparent', borderRadius: 4, padding: hl ? '2px 4px' : '2px 0', margin: hl ? '0 -4px 5px' : '0 0 7px', fontWeight: hl ? 600 : 400 }}>
+                <div key={f} style={{ display: 'flex', gap: 6, fontSize: 12, color: hl ? 'var(--accent)' : 'var(--text-2)', background: hl ? 'rgba(249,115,22,0.08)' : 'transparent', borderRadius: 4, padding: hl ? '2px 4px' : '2px 0', margin: hl ? '0 -4px 5px' : '0 0 7px', fontWeight: hl ? 600 : 400 }}>
                   <span style={{ color: hl ? 'var(--accent)' : 'var(--text-3)', flexShrink: 0 }}>✓</span>{f}
                 </div>
               )

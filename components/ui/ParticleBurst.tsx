@@ -8,7 +8,7 @@ export default function ParticleBurst({ trigger, x = 50, y = 50 }: Props) {
 
   useEffect(() => {
     if (!trigger) return
-    const colors = ['#c8f542', '#7B61FF', '#c8f542', '#a8d530', '#9b85ff', '#c8f542']
+    const colors = ['#f97316', '#a78bfa', '#f97316', '#a8d530', '#9b85ff', '#f97316']
     const newParticles = Array.from({ length: 20 }, (_, i) => ({
       id: Date.now() + i,
       tx: `${(Math.random() - 0.5) * 80}px`,

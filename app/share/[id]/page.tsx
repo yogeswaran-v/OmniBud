@@ -58,14 +58,14 @@ export default async function SharePage({ params }: { params: { id: string } }) 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', position: 'relative', overflow: 'hidden' }}>
       {/* Ambient glow */}
-      <div aria-hidden="true" style={{ position: 'fixed', top: '-20%', left: '50%', transform: 'translateX(-50%)', width: 600, height: 400, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(123,97,255,0.12) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+      <div aria-hidden="true" style={{ position: 'fixed', top: '-20%', left: '50%', transform: 'translateX(-50%)', width: 600, height: 400, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(167,139,250,0.12) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
 
       <div style={{ width: '100%', maxWidth: 560, animation: 'springIn 0.45s var(--ease-spring) both', position: 'relative', zIndex: 1 }}>
 
         {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 36 }}>
-          <div style={{ width: 28, height: 28, background: 'var(--accent)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 12px rgba(200,245,66,0.25)' }}>
-            <div style={{ width: 8, height: 8, background: '#050505', borderRadius: '50%' }} />
+          <div style={{ width: 28, height: 28, background: 'var(--accent)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 12px rgba(249,115,22,0.25)' }}>
+            <div style={{ width: 8, height: 8, background: '#07070c', borderRadius: '50%' }} />
           </div>
           <span style={{ fontFamily: 'var(--font-serif)', fontSize: 16 }}>OmniDub</span>
         </div>

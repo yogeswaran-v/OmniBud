@@ -87,7 +87,7 @@ export default function HistoryList() {
               padding: '6px 14px', borderRadius: 20,
               border: `1px solid ${filter === f ? 'var(--accent)' : 'var(--border)'}`,
               background: filter === f ? 'var(--accent)' : 'transparent',
-              color: filter === f ? '#0a0a0a' : 'var(--text-3)',
+              color: filter === f ? '#07070c' : 'var(--text-3)',
               fontSize: 12, fontWeight: filter === f ? 600 : 400,
               cursor: 'pointer', transition: 'var(--transition)',
             }}>
@@ -141,7 +141,7 @@ export default function HistoryList() {
                 >
                   <div style={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0, marginTop: 4,
                     background: job.status === 'completed' ? 'var(--accent)' : job.status === 'failed' ? 'var(--danger)' : 'var(--text-4)',
-                    boxShadow: job.status === 'completed' ? '0 0 8px rgba(200,245,66,0.5)' : job.status === 'failed' ? '0 0 8px rgba(224,85,85,0.5)' : 'none',
+                    boxShadow: job.status === 'completed' ? '0 0 8px rgba(249,115,22,0.50)' : job.status === 'failed' ? '0 0 8px rgba(224,85,85,0.5)' : 'none',
                   }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
@@ -152,7 +152,7 @@ export default function HistoryList() {
                         fontSize: 10, padding: '2px 7px', borderRadius: 20,
                         background: job.status === 'completed' ? 'var(--accent-dim)' : job.status === 'failed' ? 'var(--danger-dim)' : 'var(--bg-3)',
                         color: job.status === 'completed' ? 'var(--accent)' : job.status === 'failed' ? 'var(--danger)' : 'var(--text-3)',
-                        border: `1px solid ${job.status === 'completed' ? 'rgba(200,245,66,0.2)' : job.status === 'failed' ? 'rgba(224,85,85,0.2)' : 'var(--border)'}`,
+                        border: `1px solid ${job.status === 'completed' ? 'rgba(249,115,22,0.20)' : job.status === 'failed' ? 'rgba(224,85,85,0.2)' : 'var(--border)'}`,
                       }}>
                         {job.status}
                       </span>
@@ -260,7 +260,7 @@ export default function HistoryList() {
                           style={{
                             fontSize: 12, color: 'var(--accent)',
                             padding: '6px 12px',
-                            border: '1px solid rgba(200,245,66,0.2)',
+                            border: '1px solid rgba(249,115,22,0.20)',
                             borderRadius: 8,
                             textDecoration: 'none',
                           }}

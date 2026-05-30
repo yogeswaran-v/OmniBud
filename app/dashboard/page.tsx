@@ -67,7 +67,7 @@ export default async function DashboardHome() {
 
       {/* Return visit hook */}
       {showReturnHook && lastAudio?.output_url && (
-        <div style={{ marginBottom: 28, padding: 20, background: 'rgba(200,245,66,0.04)', boxShadow: 'var(--shadow-accent)', borderRadius: 'var(--radius)', animation: 'slideDown 0.3s ease' }}>
+        <div style={{ marginBottom: 28, padding: 20, background: 'rgba(249,115,22,0.04)', boxShadow: 'var(--shadow-accent)', borderRadius: 'var(--radius)', animation: 'slideDown 0.3s ease' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <div>
               <div style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 3 }}>your last generation</div>
@@ -114,7 +114,7 @@ export default async function DashboardHome() {
               className={card.accent ? 'card-hover-accent' : 'card-hover'}
               style={{
                 padding: '18px 16px', borderRadius: 'var(--radius)',
-                background: card.accent ? 'rgba(200,245,66,0.04)' : 'rgba(255,255,255,0.025)',
+                background: card.accent ? 'rgba(249,115,22,0.04)' : 'rgba(255,255,255,0.025)',
                 boxShadow: card.accent ? 'var(--shadow-accent)' : 'var(--shadow-1)',
                 display: 'flex', flexDirection: 'column', gap: 8,
               }}>

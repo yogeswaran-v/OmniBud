@@ -120,7 +120,7 @@ export default function WaveformPlayer({ src, label, compact = false, onEnded, a
             width: compact ? 28 : 32, height: compact ? 28 : 32,
             borderRadius: '50%',
             background: 'var(--accent)',
-            color: '#0a0a0a',
+            color: '#07070c',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: compact ? 10 : 12,
             flexShrink: 0,

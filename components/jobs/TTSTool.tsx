@@ -156,7 +156,7 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
                   padding: '14px 12px',
                   borderRadius: 'var(--radius)',
                   cursor: 'pointer',
-                  background: selected ? 'rgba(200,245,66,0.06)' : 'rgba(255,255,255,0.025)',
+                  background: selected ? 'rgba(249,115,22,0.06)' : 'rgba(255,255,255,0.025)',
                   boxShadow: selected ? 'var(--shadow-accent)' : 'var(--shadow-1)',
                   opacity: locked ? 0.5 : 1,
                   transition: 'var(--transition)',
@@ -166,7 +166,7 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
                 onMouseLeave={e => { if (!selected && !locked) (e.currentTarget as HTMLDivElement).style.boxShadow = 'var(--shadow-1)' }}
               >
                 {v.pro && (
-                  <span style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: 'var(--accent-2-dim)', color: '#a490ff', border: '1px solid rgba(123,97,255,0.3)', padding: '1px 6px', borderRadius: 10, fontWeight: 700, letterSpacing: '0.06em' }}>PRO</span>
+                  <span style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: 'var(--accent-2-dim)', color: '#c4b5fd', border: '1px solid rgba(167,139,250,0.30)', padding: '1px 6px', borderRadius: 10, fontWeight: 700, letterSpacing: '0.06em' }}>PRO</span>
                 )}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                   <div>
@@ -179,7 +179,7 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
                       width: 26, height: 26, borderRadius: '50%',
                       background: previewPlaying === v.id ? 'var(--accent)' : 'var(--bg-4)',
                       border: `1px solid ${previewPlaying === v.id ? 'transparent' : 'var(--border)'}`,
-                      color: previewPlaying === v.id ? '#0a0a0a' : 'var(--text-3)',
+                      color: previewPlaying === v.id ? '#07070c' : 'var(--text-3)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 9, flexShrink: 0,
                       transition: 'var(--transition)',
@@ -219,7 +219,7 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
           placeholder="enter your script here..."
           rows={6}
           style={{ width: '100%', padding: '13px 15px', fontSize: 13, lineHeight: 1.7, borderRadius: 'var(--radius)', resize: 'vertical', borderLeft: '3px solid transparent', transition: 'border-left 0.15s' }}
-          onFocus={e => { (e.target as HTMLTextAreaElement).style.borderLeft = '3px solid rgba(200,245,66,0.5)' }}
+          onFocus={e => { (e.target as HTMLTextAreaElement).style.borderLeft = '3px solid rgba(249,115,22,0.50)' }}
           onBlur={e => { (e.target as HTMLTextAreaElement).style.borderLeft = '3px solid transparent' }}
         />
       </div>
@@ -238,7 +238,7 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
                 style={{
                   padding: '5px 13px', borderRadius: 20, fontSize: 12,
                   background: active ? 'var(--accent)' : locked ? 'transparent' : 'var(--bg-3)',
-                  color: active ? '#0a0a0a' : locked ? 'var(--text-4)' : 'var(--text-2)',
+                  color: active ? '#07070c' : locked ? 'var(--text-4)' : 'var(--text-2)',
                   border: `1px solid ${active ? 'transparent' : locked ? 'var(--border)' : 'var(--border)'}`,
                   cursor: locked ? 'default' : 'pointer',
                   opacity: locked ? 0.5 : 1,
@@ -295,7 +295,7 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
 
       {/* Output */}
       {job?.status === 'completed' && job.output_url && (
-        <div style={{ marginTop: 20, padding: 20, background: 'rgba(200,245,66,0.04)', boxShadow: 'var(--shadow-accent)', borderRadius: 'var(--radius)', animation: 'springIn 0.45s var(--ease-spring) both' }}>
+        <div style={{ marginTop: 20, padding: 20, background: 'rgba(249,115,22,0.04)', boxShadow: 'var(--shadow-accent)', borderRadius: 'var(--radius)', animation: 'springIn 0.45s var(--ease-spring) both' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <span style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>✓ generated</span>
             <div style={{ display: 'flex', gap: 8 }}>

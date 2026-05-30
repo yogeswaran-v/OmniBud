@@ -45,7 +45,7 @@ export default function VoiceCloneTool() {
   return (
     <div style={{ maxWidth: 720, animation: 'fadeIn 0.25s ease' }}>
       <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 11, color: '#c8f542', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Voice Clone</div>
+        <div style={{ fontSize: 11, color: '#f97316', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Voice Clone</div>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 28, fontWeight: 400, letterSpacing: '-0.02em' }}>Clone any voice in seconds</h1>
         <p style={{ fontSize: 13, color: '#555', marginTop: 6 }}>Upload a voice sample, type your script, select a language. We do the rest.</p>
       </div>
@@ -64,8 +64,8 @@ export default function VoiceCloneTool() {
           <input ref={fileRef} type="file" accept="audio/*,video/*" style={{ display: 'none' }} onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0])} />
           {sampleFile ? (
             <div>
-              <div style={{ color: '#c8f542', fontSize: 18, marginBottom: 4 }}>✓</div>
-              <div style={{ fontSize: 13, color: '#c8f542' }}>{sampleFile.name}</div>
+              <div style={{ color: '#f97316', fontSize: 18, marginBottom: 4 }}>✓</div>
+              <div style={{ fontSize: 13, color: '#f97316' }}>{sampleFile.name}</div>
               <div style={{ fontSize: 11, color: '#444', marginTop: 3 }}>Click to replace · Free: 30s max · Pro: 5 min max</div>
             </div>
           ) : (

@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import type { VoiceProfile } from '@/types'
 
 function avatarColor(name: string): string {
-  const colors = ['#7B61FF','#c8f542','#f0a030','#e05555','#4ade80','#60a5fa','#f472b6','#a78bfa']
+  const colors = ['#a78bfa','#f97316','#f0a030','#e05555','#4ade80','#60a5fa','#f472b6','#a78bfa']
   let hash = 0
   for (const c of name) hash = (hash * 31 + c.charCodeAt(0)) & 0xffffffff
   return colors[Math.abs(hash) % colors.length]
@@ -90,7 +90,7 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
         </div>
         {showCreate && (
           <button onClick={() => setShowForm(!showForm)}
-            style={{ padding: '9px 18px', borderRadius: 8, border: 'none', background: showForm ? '#1a1a1a' : '#c8f542', color: showForm ? '#555' : '#0a0a0a', fontSize: 12, fontWeight: 600 }}>
+            style={{ padding: '9px 18px', borderRadius: 8, border: 'none', background: showForm ? '#1a1a1a' : '#f97316', color: showForm ? '#555' : '#07070c', fontSize: 12, fontWeight: 600 }}>
             {showForm ? 'Cancel' : '+ New Profile'}
           </button>
         )}
@@ -121,13 +121,13 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
               <input id="vp-sample-upload" type="file" accept="audio/*" style={{ display: 'none' }}
                 onChange={e => setSampleFile(e.target.files?.[0] ?? null)} />
               {sampleFile
-                ? <span style={{ fontSize: 12, color: '#c8f542' }}>✓ {sampleFile.name}</span>
+                ? <span style={{ fontSize: 12, color: '#f97316' }}>✓ {sampleFile.name}</span>
                 : <span style={{ fontSize: 12, color: '#444' }}>Click to upload audio sample (WAV · MP3 · M4A)</span>
               }
             </div>
           </div>
           <button onClick={handleCreate} disabled={creating || !name.trim()}
-            style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: (!name.trim() || creating) ? '#141414' : '#c8f542', color: (!name.trim() || creating) ? '#333' : '#0a0a0a', fontSize: 12, fontWeight: 600 }}>
+            style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: (!name.trim() || creating) ? '#141414' : '#f97316', color: (!name.trim() || creating) ? '#333' : '#07070c', fontSize: 12, fontWeight: 600 }}>
             {uploading ? 'Uploading...' : creating ? 'Creating...' : 'Create Profile'}
           </button>
         </div>
@@ -148,7 +148,7 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
               onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'var(--shadow-2)' }}
               onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'var(--shadow-1)' }}
             >
-              <div style={{ width: 40, height: 40, borderRadius: '50%', background: avatarColor(p.name), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#050505', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: avatarColor(p.name), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#07070c', flexShrink: 0 }}>
                 {initials(p.name)}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -156,7 +156,7 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
                 {p.description && <div style={{ fontSize: 11, color: '#555', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.description}</div>}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 20, background: p.status === 'ready' ? '#0d1a08' : '#1a1008', color: p.status === 'ready' ? '#c8f542' : '#a07020', border: `1px solid ${p.status === 'ready' ? '#2a3a1a' : '#3a2a10'}` }}>
+                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 20, background: p.status === 'ready' ? '#0d1a08' : '#1a1008', color: p.status === 'ready' ? '#f97316' : '#a07020', border: `1px solid ${p.status === 'ready' ? '#2a3a1a' : '#3a2a10'}` }}>
                   {p.status}
                 </span>
                 {p.sample_url && (

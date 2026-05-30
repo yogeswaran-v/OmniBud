@@ -6,7 +6,7 @@ export default function PricingPage() {
       <div style={{ maxWidth: 860, margin: '0 auto' }}>
         <Link href="/" style={{ fontSize: 13, color: '#444', display: 'inline-block', marginBottom: 40 }}>← Back</Link>
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ fontSize: 11, color: '#c8f542', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>Pricing</div>
+          <div style={{ fontSize: 11, color: '#f97316', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>Pricing</div>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 42, fontWeight: 400, letterSpacing: '-0.02em', marginBottom: 12 }}>Simple, transparent pricing</h1>
           <p style={{ fontSize: 15, color: '#555' }}>Start free. Upgrade when you need more.</p>
         </div>
@@ -36,11 +36,11 @@ export default function PricingPage() {
           </div>
 
           {/* Pro */}
-          <div style={{ padding: '32px 28px', background: '#0f1a08', border: '1.5px solid #c8f542', borderRadius: 16, position: 'relative' }}>
-            <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: '#c8f542', color: '#0a0a0a', fontSize: 10, fontWeight: 700, padding: '3px 12px', borderRadius: 20, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+          <div style={{ padding: '32px 28px', background: '#0f1a08', border: '1.5px solid #f97316', borderRadius: 16, position: 'relative' }}>
+            <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: '#f97316', color: '#07070c', fontSize: 10, fontWeight: 700, padding: '3px 12px', borderRadius: 20, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
               Most Popular
             </div>
-            <div style={{ fontSize: 12, color: '#c8f542', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 16 }}>Pro</div>
+            <div style={{ fontSize: 12, color: '#f97316', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 16 }}>Pro</div>
             <div style={{ fontFamily: 'var(--font-serif)', fontSize: 42, marginBottom: 4 }}>$19</div>
             <div style={{ fontSize: 12, color: '#555', marginBottom: 28 }}>per month · cancel anytime</div>
             {[
@@ -53,10 +53,10 @@ export default function PricingPage() {
               '6 built-in voices',
             ].map(f => (
               <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, fontSize: 13, color: '#e8e8e8' }}>
-                <span style={{ color: '#c8f542', fontSize: 16 }}>✓</span> {f}
+                <span style={{ color: '#f97316', fontSize: 16 }}>✓</span> {f}
               </div>
             ))}
-            <Link href="/auth/signup" style={{ display: 'block', marginTop: 28, padding: '12px', textAlign: 'center', background: '#c8f542', borderRadius: 10, fontSize: 13, fontWeight: 600, color: '#0a0a0a' }}>
+            <Link href="/auth/signup" style={{ display: 'block', marginTop: 28, padding: '12px', textAlign: 'center', background: '#f97316', borderRadius: 10, fontSize: 13, fontWeight: 600, color: '#07070c' }}>
               Start Pro →
             </Link>
           </div>
@@ -64,7 +64,7 @@ export default function PricingPage() {
 
         <div style={{ textAlign: 'center', marginTop: 48, fontSize: 13, color: '#333' }}>
           Need higher volume or custom enterprise pricing?{' '}
-          <a href="mailto:hello@omnidub.ai" style={{ color: '#c8f542' }}>Contact us →</a>
+          <a href="mailto:hello@omnidub.ai" style={{ color: '#f97316' }}>Contact us →</a>
         </div>
       </div>
     </div>

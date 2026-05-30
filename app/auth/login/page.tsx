@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
@@ -22,12 +22,12 @@ export default function LoginPage() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '55% 45%', background: 'var(--bg)' }}>
-      {/* Left — form */}
+      {/* Left â€” form */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 56px', animation: 'fadeIn 0.4s var(--ease-out) both' }}>
         <div style={{ width: '100%', maxWidth: 380 }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 52 }}>
-            <div style={{ width: 28, height: 28, background: 'var(--accent)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(200,245,66,0.28)' }}>
-              <div style={{ width: 8, height: 8, background: '#050505', borderRadius: '50%' }} />
+            <div style={{ width: 28, height: 28, background: 'var(--accent)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(249,115,22,0.28)' }}>
+              <div style={{ width: 8, height: 8, background: '#07070c', borderRadius: '50%' }} />
             </div>
             <span style={{ fontFamily: 'var(--font-serif)', fontSize: 17 }}>OmniDub</span>
           </Link>
@@ -52,7 +52,7 @@ export default function LoginPage() {
           <div style={{ marginBottom: 28 }}>
             <label style={{ fontSize: 11, color: 'var(--text-3)', display: 'block', marginBottom: 7, fontWeight: 500, letterSpacing: '0.04em' }}>password</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
               style={{ width: '100%', padding: '13px 16px', fontSize: 14, borderRadius: 'var(--radius)', background: 'var(--bg-3)' }}
               onKeyDown={e => e.key === 'Enter' && handleLogin()} />
           </div>
@@ -60,23 +60,23 @@ export default function LoginPage() {
           <button onClick={handleLogin} disabled={loading || !email || !password}
             className={`btn-accent${loading ? ' btn-shimmer' : ''}`}
             style={{ width: '100%', padding: '14px', fontSize: 14, borderRadius: 'var(--radius)', justifyContent: 'center' }}>
-            {loading ? <><div className="spinner" /> signing in…</> : 'sign in →'}
+            {loading ? <><div className="spinner" /> signing inâ€¦</> : 'sign in â†’'}
           </button>
 
           <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--text-3)', marginTop: 22 }}>
             no account?{' '}
-            <Link href="/auth/signup" style={{ color: 'var(--accent)', fontWeight: 500 }}>create one free →</Link>
+            <Link href="/auth/signup" style={{ color: 'var(--accent)', fontWeight: 500 }}>create one free â†’</Link>
           </p>
         </div>
       </div>
 
-      {/* Right — animated waveform + quote */}
+      {/* Right â€” animated waveform + quote */}
       <div className="bg-split-right hide-mobile" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 48, position: 'relative', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, height: 80, marginBottom: 48 }}>
           {WAVE_HEIGHTS.map((h, i) => (
             <div key={i} style={{
               width: 4, height: `${h * 80}px`, borderRadius: 4,
-              background: i % 3 === 0 ? 'rgba(200,245,66,0.7)' : 'rgba(123,97,255,0.5)',
+              background: i % 3 === 0 ? 'rgba(249,115,22,0.70)' : 'rgba(167,139,250,0.50)',
               transformOrigin: 'center',
               animation: `waveBar ${0.8 + (i % 5) * 0.15}s ease-in-out ${(i * 0.06) % 1}s infinite`,
             }} />
@@ -86,7 +86,7 @@ export default function LoginPage() {
           <p style={{ fontFamily: 'var(--font-serif)', fontSize: 19, fontWeight: 300, fontStyle: 'italic', lineHeight: 1.55, color: 'rgba(240,240,240,0.85)', marginBottom: 16 }}>
             &ldquo;{QUOTE.text}&rdquo;
           </p>
-          <cite style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontStyle: 'normal', letterSpacing: '0.06em' }}>— {QUOTE.author}</cite>
+          <cite style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontStyle: 'normal', letterSpacing: '0.06em' }}>â€” {QUOTE.author}</cite>
         </blockquote>
       </div>
     </div>

@@ -81,9 +81,9 @@ export default function TranscriptionTool() {
           onDragLeave={() => setDragging(false)}
           onDrop={e => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files[0]; if (f) handleFileSelect(f) }}
           style={{
-            border: `2px dashed ${dragging ? 'var(--accent)' : audioFile ? 'rgba(200,245,66,0.3)' : 'var(--border)'}`,
-            background: dragging ? 'rgba(200,245,66,0.04)' : audioFile ? 'rgba(200,245,66,0.02)' : 'rgba(255,255,255,0.01)',
-            boxShadow: dragging ? '0 0 0 4px rgba(200,245,66,0.08)' : 'none',
+            border: `2px dashed ${dragging ? 'var(--accent)' : audioFile ? 'rgba(249,115,22,0.30)' : 'var(--border)'}`,
+            background: dragging ? 'rgba(249,115,22,0.04)' : audioFile ? 'rgba(249,115,22,0.02)' : 'rgba(255,255,255,0.01)',
+            boxShadow: dragging ? '0 0 0 4px rgba(249,115,22,0.08)' : 'none',
             borderRadius: 'var(--radius-lg)', padding: '40px 24px', textAlign: 'center', cursor: 'pointer',
             transition: 'all 0.2s var(--ease)',
           }}>
@@ -91,8 +91,8 @@ export default function TranscriptionTool() {
             onChange={e => e.target.files?.[0] && handleFileSelect(e.target.files[0])} />
           {audioFile ? (
             <div>
-              <div style={{ color: '#c8f542', fontSize: 18, marginBottom: 4 }}>{uploading ? '⏳' : '✓'}</div>
-              <div style={{ fontSize: 13, color: '#c8f542' }}>{audioFile.name}</div>
+              <div style={{ color: '#f97316', fontSize: 18, marginBottom: 4 }}>{uploading ? '⏳' : '✓'}</div>
+              <div style={{ fontSize: 13, color: '#f97316' }}>{audioFile.name}</div>
               <div style={{ fontSize: 11, color: '#444', marginTop: 3 }}>
                 {uploading ? 'Uploading...' : `${(audioFile.size / 1024 / 1024).toFixed(1)} MB · Click to replace`}
               </div>
@@ -112,7 +112,7 @@ export default function TranscriptionTool() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {SUPPORTED_LANGUAGES.map(lang => (
             <button key={lang} onClick={() => setLanguage(lang)}
-              style={{ padding: '5px 12px', borderRadius: 20, fontSize: 12, border: 'none', cursor: 'pointer', background: language === lang ? '#c8f542' : '#1a1a1a', color: language === lang ? '#0a0a0a' : '#666', transition: 'all 0.15s' }}>
+              style={{ padding: '5px 12px', borderRadius: 20, fontSize: 12, border: 'none', cursor: 'pointer', background: language === lang ? '#f97316' : '#1a1a1a', color: language === lang ? '#07070c' : '#666', transition: 'all 0.15s' }}>
               {lang}
             </button>
           ))}
@@ -160,7 +160,7 @@ function TranscriptResult({ jobId }: { jobId: string }) {
   }
 
   if (!transcript) return (
-    <div style={{ marginTop: 16, padding: '14px', background: '#0f1a08', border: '1px solid #2a3a1a', borderRadius: 12, fontSize: 13, color: '#c8f542' }}>
+    <div style={{ marginTop: 16, padding: '14px', background: '#0f1a08', border: '1px solid #2a3a1a', borderRadius: 12, fontSize: 13, color: '#f97316' }}>
       ✓ Transcription complete
     </div>
   )
@@ -168,7 +168,7 @@ function TranscriptResult({ jobId }: { jobId: string }) {
   return (
     <div style={{ marginTop: 16, padding: '20px', background: '#0f1a08', border: '1px solid #2a3a1a', borderRadius: 12, animation: 'fadeIn 0.3s ease' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div style={{ fontSize: 12, color: '#c8f542' }}>✓ Transcript</div>
+        <div style={{ fontSize: 12, color: '#f97316' }}>✓ Transcript</div>
         <button onClick={copy} style={{ padding: '5px 12px', background: '#1e1e1e', border: '1px solid #2a2a2a', borderRadius: 6, fontSize: 11, color: '#888', cursor: 'pointer' }}>
           {copied ? '✓ Copied' : 'Copy'}
         </button>

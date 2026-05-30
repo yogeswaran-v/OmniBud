@@ -56,12 +56,12 @@ export default function DashboardShell({ user, profile, usage, recentJobs, child
     return (
       <>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 28 }}>
-          <div style={{ width: 28, height: 28, background: 'var(--accent)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 0 12px rgba(200,245,66,0.25)' }}>
-            <div style={{ width: 8, height: 8, background: '#050505', borderRadius: '50%' }} />
+          <div style={{ width: 28, height: 28, background: 'var(--accent)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 0 12px rgba(249,115,22,0.25)' }}>
+            <div style={{ width: 8, height: 8, background: '#07070c', borderRadius: '50%' }} />
           </div>
           <span style={{ fontFamily: 'var(--font-serif)', fontSize: 16 }}>OmniDub</span>
           {streak >= 3 && (
-            <span style={{ fontSize: 10, marginLeft: 'auto', background: 'rgba(240,160,48,0.15)', color: 'var(--warning)', border: '1px solid rgba(240,160,48,0.25)', padding: '1px 7px', borderRadius: 10, fontWeight: 600, boxShadow: streak >= 7 ? '0 0 12px rgba(200,245,66,0.3)' : 'none' }}>
+            <span style={{ fontSize: 10, marginLeft: 'auto', background: 'rgba(240,160,48,0.15)', color: 'var(--warning)', border: '1px solid rgba(240,160,48,0.25)', padding: '1px 7px', borderRadius: 10, fontWeight: 600, boxShadow: streak >= 7 ? '0 0 12px rgba(249,115,22,0.30)' : 'none' }}>
               {`🔥 ${streak}`}
             </span>
           )}
@@ -102,7 +102,7 @@ export default function DashboardShell({ user, profile, usage, recentJobs, child
             }
             return (
               <Link key={tool.href} href={tool.href}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', borderRadius: 'var(--radius)', background: active ? 'rgba(200,245,66,0.06)' : 'transparent', color: active ? 'var(--accent)' : 'var(--text-3)', fontSize: 13, fontWeight: active ? 500 : 400, borderLeft: `3px solid ${active ? 'var(--accent)' : 'transparent'}`, transition: 'var(--transition)' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', borderRadius: 'var(--radius)', background: active ? 'rgba(249,115,22,0.06)' : 'transparent', color: active ? 'var(--accent)' : 'var(--text-3)', fontSize: 13, fontWeight: active ? 500 : 400, borderLeft: `3px solid ${active ? 'var(--accent)' : 'transparent'}`, transition: 'var(--transition)' }}
                 onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-2)'; (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.03)' } }}
                 onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-3)'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' } }}
               >
