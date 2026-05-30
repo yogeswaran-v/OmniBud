@@ -82,7 +82,7 @@ export default function TranscriptionTool() {
           onDrop={e => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files[0]; if (f) handleFileSelect(f) }}
           style={{
             border: `2px dashed ${dragging ? 'var(--accent)' : audioFile ? 'rgba(249,115,22,0.30)' : 'var(--border)'}`,
-            background: dragging ? 'rgba(249,115,22,0.04)' : audioFile ? 'rgba(249,115,22,0.02)' : 'rgba(255,255,255,0.01)',
+            background: dragging ? 'rgba(249,115,22,0.04)' : audioFile ? 'rgba(249,115,22,0.02)' : 'var(--bg-2)',
             boxShadow: dragging ? '0 0 0 4px rgba(249,115,22,0.08)' : 'none',
             borderRadius: 'var(--radius-lg)', padding: '40px 24px', textAlign: 'center', cursor: 'pointer',
             transition: 'all 0.2s var(--ease)',

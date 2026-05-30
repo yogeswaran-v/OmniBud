@@ -39,7 +39,7 @@ export default function UpgradeModal({ onClose, trigger = 'generic' }: Props) {
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
       style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', animation: 'fadeIn 0.2s ease' }}
     >
-      <div style={{ width: '100%', maxWidth: 560, background: 'rgba(10,10,10,0.94)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: 32, animation: 'slideUp 0.26s ease', position: 'relative', boxShadow: '0 24px 80px rgba(0,0,0,0.6)' }}>
+      <div style={{ width: '100%', maxWidth: 560, background: 'var(--bg-2)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: 32, animation: 'slideUp 0.26s ease', position: 'relative', boxShadow: '0 24px 80px rgba(0,0,0,0.6)' }}>
         <button onClick={onClose} style={{ position: 'absolute', top: 14, right: 16, color: 'var(--text-3)', fontSize: 20, lineHeight: 1, padding: 4 }}>×</button>
 
         <div style={{ marginBottom: 24 }}>

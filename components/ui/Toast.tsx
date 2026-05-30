@@ -37,7 +37,7 @@ export default function ToastProvider() {
             fontWeight: 500,
             pointerEvents: 'auto',
             animation: 'slideUp 0.24s ease',
-            background: t.type === 'success' ? 'rgba(249,115,22,0.12)' : t.type === 'error' ? 'rgba(224,85,85,0.12)' : 'rgba(255,255,255,0.06)',
+            background: t.type === 'success' ? 'rgba(249,115,22,0.12)' : t.type === 'error' ? 'rgba(224,85,85,0.12)' : 'var(--bg-4)',
             border: `1px solid ${t.type === 'success' ? 'rgba(249,115,22,0.30)' : t.type === 'error' ? 'rgba(224,85,85,0.3)' : 'rgba(255,255,255,0.1)'}`,
             color: t.type === 'success' ? 'var(--accent)' : t.type === 'error' ? 'var(--danger)' : 'var(--text-2)',
             backdropFilter: 'blur(12px)',

@@ -104,7 +104,7 @@ export default function DashboardShell({ user, profile, usage, recentJobs, child
             return (
               <Link key={tool.href} href={tool.href}
                 style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', borderRadius: 'var(--radius)', background: active ? 'rgba(249,115,22,0.06)' : 'transparent', color: active ? 'var(--accent)' : 'var(--text-3)', fontSize: 13, fontWeight: active ? 500 : 400, borderLeft: `3px solid ${active ? 'var(--accent)' : 'transparent'}`, transition: 'var(--transition)' }}
-                onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-2)'; (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.03)' } }}
+                onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-2)'; (e.currentTarget as HTMLAnchorElement).style.background = 'var(--bg-3)' } }}
                 onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-3)'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' } }}
               >
                 <span style={{ fontSize: 14 }}>{tool.icon}</span>

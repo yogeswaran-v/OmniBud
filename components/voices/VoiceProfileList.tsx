@@ -144,7 +144,7 @@ export default function VoiceProfileList({ onSelect, showCreate = true }: Props)
           {profiles.map(p => (
             <div key={p.id}
               onClick={() => onSelect?.(p)}
-              style={{ padding: '18px 16px', background: 'rgba(255,255,255,0.025)', boxShadow: 'var(--shadow-1)', borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center', gap: 14, cursor: onSelect ? 'pointer' : 'default', transition: 'var(--transition)' }}
+              style={{ padding: '18px 16px', background: 'var(--bg-2)', boxShadow: 'var(--shadow-1)', borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center', gap: 14, cursor: onSelect ? 'pointer' : 'default', transition: 'var(--transition)' }}
               onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'var(--shadow-2)' }}
               onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'var(--shadow-1)' }}
             >

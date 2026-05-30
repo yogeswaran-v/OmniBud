@@ -30,7 +30,7 @@ export function useJobPoller(jobId: string | null) {
 
 export function ProgressBar({ progress, status }: { progress: number; status: string }) {
   return (
-    <div style={{ marginTop: 20, padding: '20px 22px', background: 'rgba(255,255,255,0.025)', boxShadow: 'var(--shadow-1)', borderRadius: 'var(--radius)', animation: 'fadeIn 0.25s ease' }}>
+    <div style={{ marginTop: 20, padding: '20px 22px', background: 'var(--bg-2)', boxShadow: 'var(--shadow-1)', borderRadius: 'var(--radius)', animation: 'fadeIn 0.25s ease' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <span style={{ fontSize: 12, color: status === 'failed' ? 'var(--danger)' : 'var(--text-2)', display: 'flex', alignItems: 'center', gap: 7 }}>
           {status === 'pending' && <><div className="spinner" /> queued — waiting for GPU</>}
@@ -40,7 +40,7 @@ export function ProgressBar({ progress, status }: { progress: number; status: st
         </span>
         <span style={{ fontSize: 12, color: 'var(--text-3)', fontFamily: 'var(--font-mono)' }}>{progress}%</span>
       </div>
-      <div style={{ height: 3, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
+      <div style={{ height: 3, background: 'var(--bg-4)', borderRadius: 3, overflow: 'hidden' }}>
         <div style={{ height: '100%', borderRadius: 3, width: `${progress}%`, background: status === 'failed' ? 'var(--danger)' : 'linear-gradient(90deg, var(--accent-2), var(--accent))', transition: 'width 0.6s var(--ease-out)' }} />
       </div>
     </div>

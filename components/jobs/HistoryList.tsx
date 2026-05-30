@@ -119,7 +119,7 @@ export default function HistoryList() {
 
             return (
               <div key={job.id} style={{
-                background: 'rgba(255,255,255,0.025)',
+                background: 'var(--bg-2)',
                 boxShadow: 'var(--shadow-1)',
                 borderRadius: 'var(--radius)',
                 overflow: 'hidden',

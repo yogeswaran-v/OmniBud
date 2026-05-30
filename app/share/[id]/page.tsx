@@ -72,7 +72,7 @@ export default async function SharePage({ params }: { params: { id: string } }) 
 
         {/* Card */}
         <div style={{
-          background: 'rgba(255,255,255,0.025)',
+          background: 'var(--bg-2)',
           boxShadow: 'var(--shadow-2)',
           borderRadius: 'var(--radius-xl)',
           padding: 32,

@@ -95,14 +95,24 @@ export default function LandingDemo() {
 
   return (
     <div style={{ width: '100%', animation: 'slideUp 0.4s ease 0.1s both' }}>
-      <div style={{
-        background: 'rgba(15,15,15,0.8)',
-        border: '1px solid var(--border-2)',
-        borderRadius: 20,
+      <div className="card-2" style={{
         padding: 24,
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
       }}>
+        {/* Idle ambient waveform — alive on load */}
+        <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3, height: 36, marginBottom: 18 }}>
+          {Array.from({ length: 40 }).map((_, i) => (
+            <div key={i} style={{
+              width: 3, height: '100%', borderRadius: 3,
+              background: i % 4 === 0 ? 'var(--accent)' : 'var(--accent-2)',
+              opacity: 0.55,
+              transformOrigin: 'center',
+              animation: `waveBar ${0.7 + (i % 6) * 0.12}s ease-in-out ${(i * 0.05) % 1.2}s infinite`,
+            }} />
+          ))}
+        </div>
+
         {/* Voice selector */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 16 }}>
           {DEMO_VOICES.map(v => (

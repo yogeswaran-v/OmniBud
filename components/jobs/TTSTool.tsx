@@ -156,7 +156,7 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
                   padding: '14px 12px',
                   borderRadius: 'var(--radius)',
                   cursor: 'pointer',
-                  background: selected ? 'rgba(249,115,22,0.06)' : 'rgba(255,255,255,0.025)',
+                  background: selected ? 'rgba(249,115,22,0.06)' : 'var(--bg-2)',
                   boxShadow: selected ? 'var(--shadow-accent)' : 'var(--shadow-1)',
                   opacity: locked ? 0.5 : 1,
                   transition: 'var(--transition)',
@@ -295,9 +295,11 @@ export default function TTSTool({ profile, usageMinutes }: Props) {
 
       {/* Output */}
       {job?.status === 'completed' && job.output_url && (
-        <div style={{ marginTop: 20, padding: 20, background: 'rgba(249,115,22,0.04)', boxShadow: 'var(--shadow-accent)', borderRadius: 'var(--radius)', animation: 'springIn 0.45s var(--ease-spring) both' }}>
+        <div className="card-accent" style={{ marginTop: 20, padding: 20, animation: 'springIn 0.45s var(--ease-spring) both' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <span style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>✓ generated</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12, color: 'var(--accent-strong)', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', animation: 'celebrate 0.5s var(--ease-spring) both' }}>
+              <span style={{ fontSize: 16 }}>🎉</span> your voice is ready
+            </span>
             <div style={{ display: 'flex', gap: 8 }}>
               <a href={job.output_url} download="omnidub-speech.mp3" className="btn-ghost" style={{ fontSize: 11, padding: '5px 12px' }}>↓ download</a>
               <button onClick={handleShare} className="btn-ghost" style={{ fontSize: 11, padding: '5px 12px' }}>↗ share</button>

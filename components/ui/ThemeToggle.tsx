@@ -4,19 +4,19 @@ import { useEffect, useState } from 'react'
 type Theme = 'light' | 'dark'
 
 export function getStoredTheme(): Theme {
-  if (typeof window === 'undefined') return 'light'
+  if (typeof window === 'undefined') return 'dark'
   try {
-    return (localStorage.getItem('omnidub-theme') as Theme) || 'light'
+    return (localStorage.getItem('omnidub-theme') as Theme) || 'dark'
   } catch {
-    return 'light'
+    return 'dark'
   }
 }
 
 export default function ThemeToggle({ compact = false }: { compact?: boolean }) {
-  const [theme, setTheme] = useState<Theme>('light')
+  const [theme, setTheme] = useState<Theme>('dark')
 
   useEffect(() => {
-    setTheme((document.documentElement.dataset.theme as Theme) || 'light')
+    setTheme((document.documentElement.dataset.theme as Theme) || 'dark')
   }, [])
 
   const toggle = () => {
