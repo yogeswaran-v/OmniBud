@@ -89,16 +89,14 @@ export default async function DashboardHome() {
             { label: 'transcribe audio',   sub: 'speech → text', href: '/dashboard/transcription', icon: '🎙', accent: false },
             { label: 'voice profiles',     sub: 'save your voices', href: '/dashboard/voices', icon: '👤', accent: false },
           ].map(card => (
-            <Link key={card.href} href={card.href} style={{
+            <Link key={card.href} href={card.href}
+              className={card.accent ? 'card-hover-accent' : 'card-hover'}
+              style={{
               padding: '16px 14px', borderRadius: 14,
               background: card.accent ? 'rgba(200,245,66,0.05)' : 'var(--bg-2)',
               border: `1px solid ${card.accent ? 'rgba(200,245,66,0.2)' : 'var(--border)'}`,
               display: 'flex', flexDirection: 'column', gap: 8,
-              transition: 'var(--transition)',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = card.accent ? 'rgba(200,245,66,0.4)' : 'var(--border-2)' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = card.accent ? 'rgba(200,245,66,0.2)' : 'var(--border)' }}
-            >
+            }}>
               <span style={{ fontSize: 22 }}>{card.icon}</span>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 500, color: card.accent ? 'var(--accent)' : 'var(--text)', marginBottom: 3 }}>{card.label}</div>

@@ -169,6 +169,14 @@ textarea { resize: none; }
 .pill-amber  { background: var(--warning-dim);  color: var(--warning);border: 1px solid rgba(240,160,48,0.25); }
 .pill-dim    { background: var(--bg-3);         color: var(--text-3); border: 1px solid var(--border); }
 
+/* ── Card hover effects (for Server Component links) ─── */
+.card-hover {
+  transition: border-color var(--transition), background var(--transition);
+}
+.card-hover:hover { border-color: var(--border-2) !important; }
+.card-hover-accent { transition: border-color var(--transition), background var(--transition); }
+.card-hover-accent:hover { border-color: rgba(200,245,66,0.4) !important; }
+
 /* ── Mobile ───────────────────────────────────── */
 @media (max-width: 768px) {
   .hide-mobile  { display: none !important; }
