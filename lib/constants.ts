@@ -5,6 +5,7 @@ export const PLAN_LIMITS = {
     maxCloneSampleSeconds: 30,
     queueSlots: 1,
     watermark: true,
+    maxVoiceProfiles: 3,
   },
   pro: {
     minutesPerDay: 120,
@@ -12,6 +13,7 @@ export const PLAN_LIMITS = {
     maxCloneSampleSeconds: 300,
     queueSlots: 10,
     watermark: false,
+    maxVoiceProfiles: 50,
   },
 }
 
@@ -25,10 +27,19 @@ export const ALL_LANGUAGES = [
 ]
 
 export const VOICES = [
-  { id: '1', name: 'Aria',   accent: 'American English',  gender: 'Female', tone: 'Warm' },
-  { id: '2', name: 'Marcus', accent: 'British English',   gender: 'Male',   tone: 'Authoritative' },
-  { id: '3', name: 'Zara',   accent: 'Indian English',    gender: 'Female', tone: 'Clear' },
-  { id: '4', name: 'Leo',    accent: 'Australian',        gender: 'Male',   tone: 'Casual' },
-  { id: '5', name: 'Mei',    accent: 'Mandarin-accented', gender: 'Female', tone: 'Crisp' },
-  { id: '6', name: 'Ravi',   accent: 'South Indian',      gender: 'Male',   tone: 'Deep' },
+  { id: '1', name: 'Aria',   accent: 'American',    gender: 'Female', tone: 'Warm',          pro: false, emoji: '🎙' },
+  { id: '2', name: 'Marcus', accent: 'British',     gender: 'Male',   tone: 'Authoritative', pro: false, emoji: '🎙' },
+  { id: '3', name: 'Zara',   accent: 'Indian',      gender: 'Female', tone: 'Clear',         pro: false, emoji: '🎙' },
+  { id: '4', name: 'Leo',    accent: 'Australian',  gender: 'Male',   tone: 'Casual',        pro: false, emoji: '🎙' },
+  { id: '5', name: 'Mei',    accent: 'Mandarin',    gender: 'Female', tone: 'Crisp',         pro: true,  emoji: '⭐' },
+  { id: '6', name: 'Ravi',   accent: 'South Asian', gender: 'Male',   tone: 'Deep',          pro: true,  emoji: '⭐' },
 ]
+
+export const VOICE_PREVIEW_TEXTS: Record<string, string> = {
+  '1': 'Hi, I\'m Aria. Warm and clear, ready to bring your words to life.',
+  '2': 'Hello, Marcus here. Authoritative, precise, and distinctly British.',
+  '3': 'Namaste, I\'m Zara. Crisp and clear, with an Indian accent.',
+  '4': 'Hey there, Leo here. Laid-back Australian vibes, mate.',
+  '5': 'Hello, I\'m Mei. Studio quality, sharp and refined.',
+  '6': 'Greetings, I\'m Ravi. Deep, resonant, and commanding.',
+}

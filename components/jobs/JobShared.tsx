@@ -29,20 +29,19 @@ export function useJobPoller(jobId: string | null) {
 }
 
 export function ProgressBar({ progress, status }: { progress: number; status: string }) {
-  const color = status === 'failed' ? '#e05555' : '#c8f542'
   return (
-    <div style={{ marginTop: 20, padding: '20px', background: '#0f0f0f', border: '1px solid #1a1a1a', borderRadius: 12 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-        <span style={{ fontSize: 12, color: '#888' }}>
-          {status === 'pending' && '⏳ Queued — waiting for GPU...'}
-          {status === 'processing' && '⚡ Processing...'}
-          {status === 'completed' && '✅ Done!'}
-          {status === 'failed' && '❌ Job failed'}
+    <div style={{ marginTop: 20, padding: '20px 22px', background: 'rgba(255,255,255,0.025)', boxShadow: 'var(--shadow-1)', borderRadius: 'var(--radius)', animation: 'fadeIn 0.25s ease' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <span style={{ fontSize: 12, color: status === 'failed' ? 'var(--danger)' : 'var(--text-2)', display: 'flex', alignItems: 'center', gap: 7 }}>
+          {status === 'pending' && <><div className="spinner" /> queued — waiting for GPU</>}
+          {status === 'processing' && <><div className="spinner" style={{ borderTopColor: 'var(--accent)' }} /> processing…</>}
+          {status === 'completed' && '✓ done'}
+          {status === 'failed' && '✗ failed'}
         </span>
-        <span style={{ fontSize: 12, color: '#555' }}>{progress}%</span>
+        <span style={{ fontSize: 12, color: 'var(--text-3)', fontFamily: 'var(--font-mono)' }}>{progress}%</span>
       </div>
-      <div style={{ height: 4, background: '#1a1a1a', borderRadius: 2 }}>
-        <div style={{ height: '100%', borderRadius: 2, width: `${progress}%`, background: color, transition: 'width 0.5s ease' }} />
+      <div style={{ height: 3, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
+        <div style={{ height: '100%', borderRadius: 3, width: `${progress}%`, background: status === 'failed' ? 'var(--danger)' : 'linear-gradient(90deg, var(--accent-2), var(--accent))', transition: 'width 0.6s var(--ease-out)' }} />
       </div>
     </div>
   )
@@ -100,8 +99,9 @@ export function LanguageSelector({ value, onChange, plan }: { value: string; onC
 export function SubmitButton({ onClick, loading, disabled, label }: { onClick: () => void; loading: boolean; disabled: boolean; label: string }) {
   return (
     <button onClick={onClick} disabled={loading || disabled}
-      style={{ padding: '13px 28px', borderRadius: 10, border: 'none', background: (loading || disabled) ? '#141414' : '#c8f542', color: (loading || disabled) ? '#333' : '#0a0a0a', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10, transition: 'all 0.15s' }}>
-      {loading ? <><div className="spinner" />{label.replace('→', '...')}</> : label}
+      className={`btn-accent${loading ? ' btn-shimmer' : ''}`}
+      style={{ padding: '14px 32px', fontSize: 14, opacity: disabled && !loading ? 0.4 : 1 }}>
+      {loading ? <><div className="spinner" />{label.replace('→', '…')}</> : label}
     </button>
   )
 }

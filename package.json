@@ -6,24 +6,29 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types tests/api/auth.test.ts tests/api/voices.test.ts tests/api/history.test.ts tests/api/share.test.ts tests/api/tts.test.ts",
+    "test:auth": "node --test --experimental-strip-types tests/api/auth.test.ts",
+    "test:fast": "node --test --experimental-strip-types tests/api/auth.test.ts tests/api/voices.test.ts tests/api/history.test.ts"
   },
   "dependencies": {
-    "next": "14.2.5",
-    "@supabase/supabase-js": "^2.43.4",
-    "@supabase/ssr": "^0.3.0",
-    "stripe": "^15.12.0",
     "@stripe/stripe-js": "^4.1.0",
-    "zustand": "^4.5.4",
+    "@supabase/ssr": "^0.3.0",
+    "@supabase/supabase-js": "^2.43.4",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.383.0",
-    "clsx": "^2.1.1"
+    "next": "14.2.5",
+    "stripe": "^15.12.0",
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "typescript": "^5",
     "eslint": "^8",
-    "eslint-config-next": "14.2.5"
+    "eslint-config-next": "14.2.5",
+    "supabase": "^2.102.0",
+    "typescript": "^5"
   }
 }

@@ -21,12 +21,18 @@ export async function GET(req: NextRequest) {
   // If still in-flight, check RunPod for latest state
   if ((job.status === 'pending' || job.status === 'processing') && job.input?.runpod_job_id) {
     const updated = await checkRunPodJob(job, admin)
-    const { input: _input, ...safe } = updated
-    return NextResponse.json(safe)
+    const { input: updInput, ...updRest } = updated
+    const safeUpdated = updated.type === 'transcription'
+      ? { ...updRest, transcript: (updInput as Record<string, unknown>)?.transcript }
+      : updRest
+    return NextResponse.json(safeUpdated)
   }
 
-  const { input: _input, ...safe } = job
-  return NextResponse.json(safe)
+  const { input, ...rest } = job
+  const safeJob = job.type === 'transcription'
+    ? { ...rest, transcript: (input as Record<string, unknown>)?.transcript }
+    : rest
+  return NextResponse.json(safeJob)
 }
 
 async function checkRunPodJob(job: Record<string, any>, admin: ReturnType<typeof createAdminSupabase>) {

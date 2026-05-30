@@ -26,7 +26,7 @@ CREATE POLICY "Users can update own profile"
 CREATE TABLE IF NOT EXISTS public.jobs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  type TEXT NOT NULL CHECK (type IN ('tts', 'clone', 'dub')),
+  type TEXT NOT NULL CHECK (type IN ('tts', 'clone', 'dub', 'transcription')),
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
   input JSONB NOT NULL DEFAULT '{}',
   output_url TEXT,
@@ -91,3 +91,34 @@ CREATE TRIGGER on_auth_user_created
 -- Storage policies (run after creating buckets)
 -- CREATE POLICY "Auth users can upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'omnidub-inputs' AND auth.role() = 'authenticated');
 -- CREATE POLICY "Public read outputs" ON storage.objects FOR SELECT USING (bucket_id = 'omnidub-outputs');
+
+-- Phase 1: Voice Profiles
+CREATE TABLE IF NOT EXISTS public.voice_profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  description TEXT DEFAULT '',
+  sample_url TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'ready', 'failed')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE public.voice_profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own voice profiles"
+  ON public.voice_profiles FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own voice profiles"
+  ON public.voice_profiles FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own voice profiles"
+  ON public.voice_profiles FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own voice profiles"
+  ON public.voice_profiles FOR DELETE
+  USING (auth.uid() = user_id);
+
+CREATE INDEX IF NOT EXISTS idx_voice_profiles_user ON public.voice_profiles(user_id);

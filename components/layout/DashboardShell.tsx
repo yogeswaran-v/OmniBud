@@ -1,131 +1,198 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { PLAN_LIMITS } from '@/lib/constants'
 import type { Profile, Job } from '@/types'
-import UpgradeModal from '@/components/ui/UpgradeModal'
+import UpgradeModal, { UpgradeTrigger } from '@/components/ui/UpgradeModal'
+import ToastProvider from '@/components/ui/Toast'
 
 interface Props {
   user: { email: string; id: string }
-  profile: Profile
+  profile: Profile & { streak_count?: number }
   usage: { minutes_used: number; jobs_count: number }
   recentJobs: Partial<Job>[]
   children: React.ReactNode
 }
 
-const TABS = [
-  { label: 'Voice Clone', href: '/dashboard', icon: '🎙' },
-  { label: 'Text to Speech', href: '/dashboard/tts', icon: '📝' },
-  { label: 'Video Dubbing', href: '/dashboard/dub', icon: '🎬' },
+const TOOLS = [
+  { label: 'text to speech',       href: '/dashboard/tts',           icon: '📝', locked: false },
+  { label: 'transcription',        href: '/dashboard/transcription', icon: '🎙', locked: false },
+  { label: 'voice profiles',       href: '/dashboard/voices',        icon: '👤', locked: false },
+  { label: 'history',              href: '/dashboard/history',       icon: '📋', locked: false },
+  { label: 'sounds like you',      href: '/dashboard',               icon: '🎭', locked: true  },
+  { label: 'speak their language', href: '/dashboard/dub',           icon: '🎬', locked: true  },
 ]
-
-function UsageBar({ used, total, label }: { used: number; total: number; label: string }) {
-  const pct = Math.min((used / total) * 100, 100)
-  const warn = pct > 80
-  return (
-    <div style={{ marginBottom: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-        <span style={{ fontSize: 10, color: '#444', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{label}</span>
-        <span style={{ fontSize: 10, color: warn ? '#e05555' : '#444' }}>{used.toFixed(1)}/{total}</span>
-      </div>
-      <div style={{ height: 3, background: '#1a1a1a', borderRadius: 2 }}>
-        <div style={{ height: '100%', borderRadius: 2, width: `${pct}%`, background: warn ? '#e05555' : '#c8f542', transition: 'width 0.5s ease' }} />
-      </div>
-    </div>
-  )
-}
 
 export default function DashboardShell({ user, profile, usage, recentJobs, children }: Props) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
-  const [showUpgrade, setShowUpgrade] = useState(false)
-  const limits = PLAN_LIMITS[profile.plan]
+  const [upgradeTrigger, setUpgradeTrigger] = useState<UpgradeTrigger | null>(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const plan = (profile.plan || 'free') as 'free' | 'pro'
+  const limits = PLAN_LIMITS[plan]
+  const pctUsed = (usage.minutes_used / limits.minutesPerDay) * 100
+  const remaining = Math.max(0, limits.minutesPerDay - usage.minutes_used)
+  const usageColor = pctUsed >= 95 ? 'var(--danger)' : pctUsed >= 80 ? 'var(--warning)' : 'var(--accent)'
+  const streak = profile.streak_count ?? 0
+
+  useEffect(() => { setMobileMenuOpen(false) }, [pathname])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     router.push('/')
   }
 
-  return (
-    <div style={{ minHeight: '100vh', background: '#080808', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Nav */}
-      <nav style={{ height: 52, borderBottom: '1px solid #141414', display: 'flex', alignItems: 'center', padding: '0 20px', gap: 14, position: 'sticky', top: 0, background: '#080808', zIndex: 20 }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-          <div style={{ width: 24, height: 24, background: '#c8f542', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: 8, height: 8, background: '#0a0a0a', borderRadius: '50%' }} />
+  const handleLockedClick = (href: string) => {
+    if (href === '/dashboard') setUpgradeTrigger('voice_clone')
+    else if (href === '/dashboard/dub') setUpgradeTrigger('video_dub')
+    else setUpgradeTrigger('generic')
+  }
+
+  function SidebarContent() {
+    return (
+      <>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 28 }}>
+          <div style={{ width: 28, height: 28, background: 'var(--accent)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 0 12px rgba(200,245,66,0.25)' }}>
+            <div style={{ width: 8, height: 8, background: '#050505', borderRadius: '50%' }} />
           </div>
           <span style={{ fontFamily: 'var(--font-serif)', fontSize: 16 }}>OmniDub</span>
+          {streak >= 3 && (
+            <span style={{ fontSize: 10, marginLeft: 'auto', background: 'rgba(240,160,48,0.15)', color: 'var(--warning)', border: '1px solid rgba(240,160,48,0.25)', padding: '1px 7px', borderRadius: 10, fontWeight: 600, boxShadow: streak >= 7 ? '0 0 12px rgba(200,245,66,0.3)' : 'none' }}>
+              {`🔥 ${streak}`}
+            </span>
+          )}
         </Link>
-        <div style={{ flex: 1 }} />
-        <div style={{ padding: '3px 9px', borderRadius: 5, background: '#111', border: '1px solid #1e1e1e', fontSize: 10, color: '#555', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-          {profile.plan} plan
-        </div>
-        {profile.plan === 'free' && (
-          <button onClick={() => setShowUpgrade(true)} style={{ padding: '6px 13px', borderRadius: 7, border: 'none', background: '#c8f542', color: '#0a0a0a', fontSize: 11, fontWeight: 600, letterSpacing: '0.03em' }}>
-            Upgrade →
-          </button>
-        )}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ fontSize: 11, color: '#444' }}>{user.email}</div>
-          <button onClick={handleSignOut} style={{ padding: '5px 10px', background: 'none', border: '1px solid #1a1a1a', borderRadius: 6, color: '#444', fontSize: 11 }}>
-            Sign out
-          </button>
-        </div>
-      </nav>
 
-      <div style={{ display: 'flex', flex: 1 }}>
-        {/* Sidebar */}
-        <aside style={{ width: 210, borderRight: '1px solid #141414', flexShrink: 0, padding: '20px 14px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontSize: 10, color: '#333', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>Tools</div>
-          {TABS.map(t => {
-            const active = pathname === t.href
+        <div style={{ marginBottom: 20, padding: 10, background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <span style={{ fontSize: 10, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{plan} plan</span>
+            {plan === 'free' && (
+              <button onClick={() => setUpgradeTrigger('generic')} style={{ fontSize: 10, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+                Pro →
+              </button>
+            )}
+          </div>
+          <div style={{ height: 3, background: 'var(--bg-4)', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${Math.min(pctUsed, 100)}%`, background: usageColor, borderRadius: 3, transition: 'width 0.5s ease' }} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 5 }}>
+            <span style={{ fontSize: 10, color: 'var(--text-4)' }}>{usage.minutes_used.toFixed(1)} used</span>
+            <span style={{ fontSize: 10, color: pctUsed >= 80 ? usageColor : 'var(--text-3)' }}>{remaining.toFixed(1)} left</span>
+          </div>
+        </div>
+
+        <div style={{ fontSize: 10, color: 'var(--text-4)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6, paddingLeft: 2, fontWeight: 600 }}>tools</div>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: 1, marginBottom: 20 }}>
+          {TOOLS.map(tool => {
+            const active = pathname === tool.href
+            const locked = tool.locked && plan === 'free'
+            if (locked) {
+              return (
+                <button key={tool.href} onClick={() => handleLockedClick(tool.href)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px', borderRadius: 8, background: 'transparent', color: 'var(--text-4)', fontSize: 13, borderLeft: '2px solid transparent', opacity: 0.45, textAlign: 'left', width: '100%', cursor: 'pointer' }}>
+                  <span style={{ fontSize: 14 }}>{tool.icon}</span>
+                  <span style={{ flex: 1 }}>{tool.label}</span>
+                  <span style={{ fontSize: 9 }}>🔒</span>
+                </button>
+              )
+            }
             return (
-              <Link key={t.href} href={t.href} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 11px', borderRadius: 8, marginBottom: 2, background: active ? '#141414' : 'transparent', color: active ? '#e8e8e8' : '#555', fontSize: 13, borderLeft: active ? '2px solid #c8f542' : '2px solid transparent', transition: 'all 0.15s' }}>
-                <span style={{ fontSize: 14 }}>{t.icon}</span>
-                {t.label}
+              <Link key={tool.href} href={tool.href}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', borderRadius: 'var(--radius)', background: active ? 'rgba(200,245,66,0.06)' : 'transparent', color: active ? 'var(--accent)' : 'var(--text-3)', fontSize: 13, fontWeight: active ? 500 : 400, borderLeft: `3px solid ${active ? 'var(--accent)' : 'transparent'}`, transition: 'var(--transition)' }}
+                onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-2)'; (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.03)' } }}
+                onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-3)'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' } }}
+              >
+                <span style={{ fontSize: 14 }}>{tool.icon}</span>
+                {tool.label}
               </Link>
             )
           })}
+        </nav>
 
-          <div style={{ marginTop: 28, marginBottom: 8, fontSize: 10, color: '#333', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Today's Usage</div>
-          <UsageBar used={usage.minutes_used} total={limits.minutesPerDay} label="Minutes" />
-
-          {profile.plan === 'free' && (
-            <button onClick={() => setShowUpgrade(true)} style={{ width: '100%', marginTop: 12, padding: '9px', borderRadius: 8, border: '1px solid #1e1e1e', background: '#0f0f0f', color: '#c8f542', fontSize: 11, letterSpacing: '0.04em' }}>
-              ↑ Pro — $19/mo
-            </button>
-          )}
-
-          {recentJobs.length > 0 && (
-            <>
-              <div style={{ marginTop: 28, marginBottom: 8, fontSize: 10, color: '#333', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Recent</div>
-              {recentJobs.map(job => (
-                <div key={job.id} style={{ fontSize: 11, color: '#3a3a3a', padding: '6px 4px', borderBottom: '1px solid #111', display: 'flex', justifyContent: 'space-between' }}>
-                  <span>{job.type?.toUpperCase()}</span>
-                  <span style={{ color: job.status === 'completed' ? '#4a7a20' : job.status === 'failed' ? '#7a2020' : '#555' }}>
-                    {job.status}
-                  </span>
+        {recentJobs.length > 0 && (
+          <>
+            <div style={{ fontSize: 10, color: 'var(--text-4)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6, paddingLeft: 2, fontWeight: 600 }}>recent</div>
+            <div style={{ marginBottom: 16 }}>
+              {recentJobs.slice(0, 4).map(job => (
+                <div key={job.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 10px', borderRadius: 8 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', flexShrink: 0, background: job.status === 'completed' ? 'var(--accent)' : job.status === 'failed' ? 'var(--danger)' : 'var(--text-4)' }} />
+                  <span style={{ fontSize: 11, color: 'var(--text-3)', flex: 1 }}>{(job.type ?? '').toUpperCase()}</span>
+                  <span style={{ fontSize: 10, color: 'var(--text-4)' }}>{job.status === 'completed' ? '✓' : job.status === 'failed' ? '✗' : '…'}</span>
                 </div>
               ))}
-            </>
+            </div>
+          </>
+        )}
+
+        <div style={{ flex: 1 }} />
+        <div style={{ paddingTop: 14, borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ fontSize: 11, color: 'var(--text-2)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</div>
+          <button onClick={handleSignOut} style={{ fontSize: 11, color: 'var(--text-4)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>out</button>
+        </div>
+      </>
+    )
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
+      {pctUsed >= 80 && (
+        <div style={{ background: pctUsed >= 95 ? 'rgba(224,85,85,0.08)' : 'rgba(240,160,48,0.07)', borderBottom: `1px solid ${pctUsed >= 95 ? 'rgba(224,85,85,0.2)' : 'rgba(240,160,48,0.2)'}`, padding: '8px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, fontSize: 12, color: pctUsed >= 95 ? 'var(--danger)' : 'var(--warning)', animation: 'slideDown 0.2s ease' }}>
+          {pctUsed >= 95 ? `only ${remaining.toFixed(1)} min left today` : `running low — ${remaining.toFixed(1)} min remaining`}
+          {plan === 'free' && (
+            <button onClick={() => setUpgradeTrigger('daily_limit')} style={{ background: 'none', border: 'none', fontSize: 12, fontWeight: 600, color: 'inherit', cursor: 'pointer', textDecoration: 'underline' }}>
+              upgrade for 120 min/day →
+            </button>
           )}
+        </div>
+      )}
 
-          <div style={{ flex: 1 }} />
-          <div style={{ fontSize: 10, color: '#2a2a2a', paddingTop: 16, borderTop: '1px solid #111' }}>
-            OmniDub v0.1.0
-          </div>
+      <div style={{ display: 'flex', flex: 1 }}>
+        <aside className="hide-mobile" style={{ width: 220, background: 'rgba(255,255,255,0.015)', boxShadow: 'inset -1px 0 0 var(--border)', flexShrink: 0, padding: '20px 14px', display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}>
+          <SidebarContent />
         </aside>
-
-        {/* Page content */}
-        <main style={{ flex: 1, overflowY: 'auto', padding: '28px 32px', animation: 'fadeIn 0.25s ease' }}>
+        <main style={{ flex: 1, overflowY: 'auto', padding: '32px 40px', animation: 'fadeIn 0.25s ease', paddingBottom: 80 }}>
           {children}
         </main>
       </div>
 
-      {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
+      <nav className="show-mobile" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'rgba(8,8,8,0.96)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderTop: '1px solid var(--border)', padding: '8px 0 12px', zIndex: 50 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+          {[
+            { label: 'tts', icon: '📝', href: '/dashboard/tts' },
+            { label: 'transcribe', icon: '🎙', href: '/dashboard/transcription' },
+            { label: 'voices', icon: '👤', href: '/dashboard/voices' },
+            { label: 'history', icon: '📋', href: '/dashboard/history' },
+          ].map(item => {
+            const active = pathname === item.href
+            return (
+              <Link key={item.href} href={item.href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, flex: 1, color: active ? 'var(--accent)' : 'var(--text-3)', fontSize: 10, padding: '4px 0' }}>
+                <span style={{ fontSize: 22 }}>{item.icon}</span>
+                <span>{item.label}</span>
+              </Link>
+            )
+          })}
+          <button onClick={() => setMobileMenuOpen(true)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, flex: 1, color: 'var(--text-3)', fontSize: 10, padding: '4px 0', background: 'none', border: 'none', cursor: 'pointer' }}>
+            <span style={{ fontSize: 22 }}>⋯</span>
+            <span>more</span>
+          </button>
+        </div>
+      </nav>
+
+      {mobileMenuOpen && (
+        <div onClick={() => setMobileMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.82)', backdropFilter: 'blur(8px)' }}>
+          <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'var(--bg-2)', borderTop: '1px solid var(--border)', borderRadius: '20px 20px 0 0', padding: '20px 16px 40px', maxHeight: '80vh', overflowY: 'auto', animation: 'springIn 0.4s var(--ease-spring)' }}>
+            <div style={{ width: 32, height: 4, background: 'var(--border)', borderRadius: 2, margin: '0 auto 20px' }} />
+            <SidebarContent />
+          </div>
+        </div>
+      )}
+
+      {upgradeTrigger && <UpgradeModal trigger={upgradeTrigger} onClose={() => setUpgradeTrigger(null)} />}
+      <ToastProvider />
     </div>
   )
 }
